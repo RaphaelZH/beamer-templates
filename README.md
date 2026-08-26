@@ -14,6 +14,28 @@ combine two.
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
 
+<p align="center">
+  <img src="midcentury-olive/screenshots/title.png" width="49%">
+  <img src="midcentury-olive/screenshots/cards.png" width="49%"><br>
+  <img src="midcentury-olive/screenshots/table.png" width="49%">
+  <img src="midcentury-olive/screenshots/figure.png" width="49%">
+</p>
+
+## Every template ships a demo
+
+`slides.tex` is the skeleton you copy — deliberately sparse, so it passes
+whatever you do to the style and tells you nothing.
+
+`demo.tex` is the same template with every construct filled to a length that
+would really be used, the prose supplied by `\lipsum`. Build it after editing
+anything in `tdstyle.tex`: uniform filler is what makes an uneven page the
+template's fault rather than the writing's. The screenshots above come from it.
+
+```
+./check.sh          build slides.tex
+./check.sh demo     build demo.tex
+```
+
 ## What every template here has to do
 
 These are the rules the collection is kept to. A template that cannot meet them
@@ -47,6 +69,26 @@ start again.
 None of these ships an institution's logo. A mark is its owner's trademark and a
 licence on the surrounding files does not extend to it. Each template has a
 placeholder; each `README.md` says what to re-measure after you replace it.
+
+## Overleaf
+
+Overleaf compiles these as they are — the fonts are in the repository and are
+loaded by path, so there is nothing to install. Two settings, once per project,
+under *Menu*:
+
+* **Compiler: XeLaTeX.** The default is pdfLaTeX, which cannot load an OpenType
+  font by filename and will fail on the first `\setsansfont`.
+* **Main document:** `midcentury-olive/slides.tex`, or `demo.tex` to see it
+  filled in.
+
+The quickest route in is *New Project → Import from GitHub*, which keeps the
+link so a later `git push` shows up there. Uploading a zip works too and does
+not.
+
+What you lose on Overleaf is `check.sh`: it reads the log and tells you which
+frame overflowed. Overleaf will still compile a deck whose slides are too full
+without saying so — the warnings are in *Raw logs*, under a heading you have to
+go looking for. If you draft there, build locally before you present.
 
 ## Licences
 

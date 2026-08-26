@@ -1,0 +1,277 @@
+% =============================================================================
+% demo.tex — the template with every construct filled to a realistic length.
+%
+%   ./check.sh demo     build it and report overflows
+%
+% Two jobs:
+%   1. a test. slides.tex is deliberately sparse, so it passes whatever you do
+%      to the style; this one carries enough text to make a spacing regression
+%      visible. Build it after editing tdstyle.tex.
+%   2. the screenshots in README.md come from here.
+%
+% The prose is \lipsum, which is the point: it is uniform, so anything that
+% looks uneven on these pages is the template's doing and not the writing's.
+% Delete this file when you copy the template — or keep it and edit it into
+% your deck, whichever is less work.
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{beamerthememidcenturymodern}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, raster}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{listings}
+\usepackage{lipsum}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+
+\input{tdstyle}
+\oliveTheme
+
+\newcommand{\srcline}[1]{%
+  \noindent\hangindent=1.0em\hangafter=1
+  \textcolor{oliveGreen}{\textbullet}\hspace{0.5em}#1\par}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{oliveInk!85},
+  backgroundcolor=\color{oliveGreen!6},
+  frame=none, xleftmargin=0.6em, xrightmargin=0.6em,
+  framexleftmargin=0.6em, framexrightmargin=0.6em,
+  aboveskip=0.7em, belowskip=0.5em,
+  breaklines=false, showstringspaces=false, columns=fullflexible,
+  literate={—}{{---}}1 {…}{{\ldots}}1 {é}{{\'e}}1 {è}{{\`e}}1,
+}
+
+\title[midcentury-olive]{%
+  A template that reports\\what will not fit}
+\subtitle{Every construct, at a length that would really be used}
+\author[A Presenter]{A Presenter}
+\institute{Your institution}
+\date{\makebox[2.413cm][l]{\MakeUppercase{\today}}}
+\titlegraphic{\includegraphics[height=1.5cm]{figures/logo-trim.png}}
+
+\AtBeginSection[]{%
+  \begin{frame}[plain, noframenumbering]
+    \sectionpage
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\tdsection{Prose, and how much of it fits}{%
+  Four paragraphs is the ceiling at this size. The fifth is what the build
+  refuses.}
+
+\begin{frame}{A page of prose}
+
+  \acb{The lead states the point} and the sentences after it carry it.
+  \lipsum[1][1-4]
+
+  \ac{A term} is marked in the accent colour, a \code{literal} in the mono
+  face. \lipsum[2][1-3]
+
+  \aside{The note at the foot sits above a hairline rule, at \code{scriptsize},
+  and takes a gap that collapses when the page is full rather than pushing
+  itself into the footer.}
+
+\end{frame}
+
+\begin{frame}{Two levels of heading}
+
+  \slidelead{The opening line under the title band, for a page that needs one.}
+
+  \acb{First point.} \lipsum[3][1-3]
+
+  \acb{Second point.} \lipsum[4][1-3]
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\tdsection{Cards, tables and code}{%
+  The three constructs that carry structure, each at the width it was measured
+  for.}
+
+\begin{frame}{Three cards}
+
+  \begin{stepflow}{3}
+    \stepcard{a source}{%
+      what goes in, described in the two or three lines a card holds before it
+      starts setting the height of the row}
+    \steparrow
+    \stepcard{a process}{%
+      what happens to it — \ac{a marked term}, and a \code{literal} that
+      follows the card's own size}
+    \steparrow
+    \stepcard{a result}{%
+      what comes out, and the one fact about it worth carrying to the next
+      page}
+  \end{stepflow}
+
+  \vspace{0.7em}
+  {\small
+  \acb{The prose under a card row says what the cards cannot.} Restating a card
+  in the paragraph beneath it is the commonest way one of these pages runs
+  over. \lipsum[5][1-2]\par}
+
+\end{frame}
+
+\begin{frame}{Four cards, and a width multiplier}
+
+  \begin{stepflow}{4}
+    \stepcard[0.8]{short}{a card whose body is brief}
+    \steparrow
+    \stepcard[1.2]{longer}{%
+      a card carrying more, given a wider box so the row does not have to be as
+      tall as this one alone would make it}
+    \steparrow
+    \stepcard[1.2]{longer}{%
+      the multipliers across a row should add up to the number of cards — here
+      0.8 + 1.2 + 1.2 + 0.8}
+    \steparrow
+    \stepcard[0.8]{short}{brief again}
+  \end{stepflow}
+
+  \vspace{0.7em}
+  {\small Widening a card does not shorten the row: its height is set by
+  whichever card runs to the most lines. Use the multiplier to even out the
+  line counts, not to buy space.\par}
+
+\end{frame}
+
+\begin{frame}{A table}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}
+                    >{\raggedright\arraybackslash}p{4.8cm}
+                    >{\raggedright\arraybackslash}p{5.0cm}@{}}
+    \toprule
+    & \thead{first heading} & \thead{second heading} \\
+    \midrule
+    \textbf{short label} & a cell of the length these columns were measured
+      for, which is two lines & \ac{a marked phrase}, and then the rest \\
+    \addlinespace[0.4em]
+    \textbf{short label} & another two-line cell, so the row heights are even
+      down the table & \code{a literal}, upright and at the table's own size \\
+    \addlinespace[0.4em]
+    \textbf{short label} & keep the label short: a wrapped label sets the row
+      height even when both cells beside it are one line & the third column is
+      widest because it usually carries the consequence \\
+    \bottomrule
+  \end{tabular}\par}
+
+  \vspace{0.6em}
+  {\small A sentence under a table says what the reader should take from it.
+  Without one, a table is a list of facts with no claim attached.\par}
+
+\end{frame}
+
+\begin{frame}[fragile]{Code beside prose}
+
+  \begin{columns}[T]
+    \begin{column}{0.53\textwidth}
+      \vspace{0pt}
+      \lstset{basicstyle=\ttfamily\scriptsize\color{oliveInk!85}, aboveskip=5pt}
+\begin{lstlisting}
+{
+  "title": "an example",
+  "nested": {
+    "a": ["short", "enough"],
+    "b": {"to": "read"} },
+  "note": "no syntax colouring —
+           it would argue with
+           the accent"
+}
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \vspace{0pt}
+      {\small\setlength{\parskip}{0.7em}%
+      Prose beside code says what the listing is \emph{for}. Reading it out is
+      what the audience is already doing.
+
+      Two things worth pointing at: \code{nested} and \code{note}.\par}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+\tdsection{Figures}{%
+  Drawn in the deck's own colours and at the deck's own size, so nothing has to
+  be kept in step by hand.}
+
+\tdstudy{A divider inside a section}{Quieter than a section page}{%
+  For marking a joint within a section — a second study, a second stage —
+  where a full section page would overstate the break. Thin spine, no
+  page-wide fill.}
+
+\begin{frame}{A figure}
+
+  \centering
+  \begin{tikzpicture}[
+    font=\fontsize{6.6}{8}\selectfont,
+    nd/.style={draw=oliveGreen!55, line width=0.7pt, rounded corners=1pt,
+               inner sep=3pt, fill=olivePaper},
+    key/.style={nd, draw=oliveGreen, line width=0.9pt},
+    ed/.style={draw=oliveGreen!75, line width=0.85pt,
+               -{Stealth[length=3.6pt,width=3.6pt]}},
+    alt/.style={draw=oliveRust!70, line width=0.9pt,
+                dash pattern=on 3.2pt off 2.2pt,
+                -{Stealth[length=3.6pt,width=4.5pt]}},
+    lab/.style={font=\fontsize{5.9}{7.2}\selectfont\itshape, text=oliveInk!55,
+                inner sep=1.5pt},
+  ]
+    \node[key] (a) at (0,0)     {\code{start}};
+    \node[nd]  (b) at (3.0,0.7) {\code{one way}};
+    \node[nd]  (c) at (3.0,-0.7){\code{another}};
+    \node[nd]  (d) at (6.2,0)   {\code{end}};
+
+    \draw[ed] (a) -- (b) node[lab, midway, above, sloped] {\code{edge}};
+    \draw[ed] (b) -- (d);
+    \draw[alt] (a) -- (c) node[lab, midway, below, sloped, text=oliveRust]
+      {the alternative};
+    \draw[alt] (c) -- (d);
+  \end{tikzpicture}
+
+  \vspace{0.5em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   A note under a figure, at the figure's own size — apparatus should never be
+   larger than what it annotates. \textcolor{oliveRust}{The alert colour} marks
+   the one path that is different in kind, not merely different.\par}
+
+  \vspace{0.5em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   \setlength{\parskip}{0.2em}%
+   \srcline{\textbf{A bulleted note}, hanging so the second line clears the
+   bullet. Defined in the preamble — a command with an argument does not
+   survive beamer's second read of a frame body.}
+   \srcline{\textbf{A second}, to show the spacing between them.}}
+
+\end{frame}
+
+\begin{frame}{What the build tells you}
+
+  \slidelead{Nothing here scales to fit. If a page holds more than the frame
+  does, \code{./check.sh} names the frame and stops.}
+
+  {\small\setlength{\parskip}{0.6em}%
+  \acb{That is the whole design.} A deck whose type size changes from page to
+  page is worse than a deck that is one page longer, and auto-scaling produces
+  the first without ever saying so. \lipsum[6][1-2]
+
+  \acb{The log is filtered, not ignored.} One warning per titled frame is the
+  full-bleed title band and is suppressed by count; anything else is real.
+  \code{README.md} lists what was verified and why.\par}
+
+  \aside{Try it: add a paragraph to any page above and rebuild. The frame will
+  be named, with the amount it runs over in points.}
+
+\end{frame}
+
+\end{document}

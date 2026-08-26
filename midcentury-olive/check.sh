@@ -2,7 +2,8 @@
 # Report frames whose content does not fit, and nothing else.
 #
 #   ./check.sh            # compile twice, then report
-#   ./check.sh --no-build # just re-read the existing slides.log
+#   ./check.sh demo       build demo.tex instead of slides.tex
+#   ./check.sh --no-build # just re-read the existing log
 #
 # WHY THIS EXISTS
 #
@@ -28,11 +29,16 @@
 set -u
 
 cd "$(dirname "$0")"
+
+# Which document. Default slides.tex; pass a bare name to build another —
+# `./check.sh demo` for the filled-out sample.
+DOC=slides
+for a in "$@"; do case "$a" in -*) ;; *) DOC="${a%.tex}" ;; esac; done
 BAND='21.33955pt'
 
 if [ "${1:-}" = "--clean" ]; then
-  rm -f slides.aux slides.log slides.nav slides.out slides.snm slides.toc \
-        slides.synctex.gz missfont.log slides.pdf
+  rm -f $DOC.aux $DOC.log $DOC.nav $DOC.out $DOC.snm $DOC.toc \
+        $DOC.synctex.gz missfont.log $DOC.pdf
   find . -name .DS_Store -delete
   echo "cleaned"
   exit 0
@@ -56,7 +62,7 @@ if [ "${1:-}" != "--no-build" ]; then
   # the last good one sitting there, and the failure looks like a success with
   # stale output — which is exactly the trap the missing-font check exists to
   # avoid.
-  rm -f slides.pdf 2>/dev/null || true
+  rm -f $DOC.pdf 2>/dev/null || true
 
   # -halt-on-error matters as much as the flag above. Under plain nonstopmode
   # LaTeX reports a \PackageError and then carries on to produce a PDF anyway,
@@ -66,20 +72,20 @@ if [ "${1:-}" != "--no-build" ]; then
   # Twice: the footer's progress bar needs \inserttotalframenumber from the aux.
   for _ in 1 2; do
     if ! "$ENGINE" -interaction=nonstopmode -halt-on-error \
-                   -file-line-error slides.tex >/dev/null 2>&1; then
+                   -file-line-error $DOC.tex >/dev/null 2>&1; then
       echo "BUILD FAILED — first error from the log:"
       echo
-      grep -m1 -A6 -E '^(!|.*:[0-9]+:)' slides.log | sed 's/^/  /'
+      grep -m1 -A6 -E '^(!|.*:[0-9]+:)' $DOC.log | sed 's/^/  /'
       exit 1
     fi
   done
 fi
 
-[ -f slides.log ] || { echo "no slides.log — compile first"; exit 1; }
+[ -f $DOC.log ] || { echo "no $DOC.log — compile first"; exit 1; }
 
 echo "=== frames whose content is too tall ==="
-if grep -q 'Overfull \\vbox' slides.log; then
-  grep -n 'Overfull \\vbox' slides.log | sed 's/^/  /'
+if grep -q 'Overfull \\vbox' $DOC.log; then
+  grep -n 'Overfull \\vbox' $DOC.log | sed 's/^/  /'
   echo
   echo "  Each of these is a slide with more on it than the frame holds."
   echo "  Cut it or split it. Do not reach for \\begin{frame}[shrink] — that"
@@ -91,14 +97,14 @@ fi
 
 echo
 echo "=== lines running past the right margin ==="
-REAL=$(grep 'Overfull \\hbox' slides.log | grep -v "$BAND" || true)
+REAL=$(grep 'Overfull \\hbox' $DOC.log | grep -v "$BAND" || true)
 if [ -n "$REAL" ]; then
   echo "$REAL" | sed 's/^/  /'
 else
   echo "  none"
 fi
 
-BANDS=$(grep -c "Overfull \\\\hbox ($BAND" slides.log || true)
+BANDS=$(grep -c "Overfull \\\\hbox ($BAND" $DOC.log || true)
 echo
 echo "(suppressed $BANDS full-bleed frame-title warnings at $BAND — see the"
 echo " comment at the top of this script)"

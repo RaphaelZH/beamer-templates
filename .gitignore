@@ -8,3 +8,9 @@
 *.synctex.gz
 missfont.log
 slides.pdf
+.DS_Store
+
+# The demo's own build artefacts. Its PDF is gitignored like any other; the
+# screenshots in screenshots/ are committed, the raw page-NN.png dumps are not.
+demo.pdf
+**/screenshots/page-*.png
