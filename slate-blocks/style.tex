@@ -110,6 +110,34 @@
 \newcolouredblock{DefinitionBox}{Definition} {SplitComplementaryColor-1}
 
 % -----------------------------------------------------------------------------
+% COVERING THE PAGE WITH A PHOTOGRAPH
+%
+% \slatecover{file} scales an image to cover the whole slide, whatever its
+% aspect ratio, without distorting it. Place the result at the page centre and
+% whichever dimension overruns is cropped evenly by the page edge.
+%
+% \includegraphics[width=\paperwidth] alone does NOT do this. The deck is 16:10
+% and most photographs are 16:9; scaled to the paper's width, a 16:9 image
+% comes up about a tenth of the page short and leaves a white band across the
+% top. Giving both width and height distorts the picture, and adding
+% keepaspectratio letterboxes it — the same gap, politely.
+%
+% So: measure it at full width, and if that is not tall enough, scale by height
+% instead.
+% -----------------------------------------------------------------------------
+\makeatletter
+\newsavebox{\slate@coverbox}
+\newcommand{\slatecover}[1]{%
+  \sbox{\slate@coverbox}{\includegraphics[width=\paperwidth]{#1}}%
+  \ifdim\ht\slate@coverbox<\paperheight
+    \includegraphics[height=\paperheight]{#1}%
+  \else
+    \usebox{\slate@coverbox}%
+  \fi
+}
+\makeatother
+
+% -----------------------------------------------------------------------------
 % THE WATERMARK
 %
 % The cover photograph again, on every slide, at 6.7% — far enough down that it
@@ -122,9 +150,9 @@
 \newcommand{\slateWatermark}[1]{%
   \usebackgroundtemplate{%
     \tikz[remember picture, overlay]{%
-      \node[opacity=0.067, anchor=south east, inner sep=0]
-        at (current page.south east)
-        {\includegraphics[width=\paperwidth]{#1}};%
+      \node[opacity=0.067, inner sep=0]
+        at (current page.center)
+        {\slatecover{#1}};%
     }%
   }%
 }
@@ -155,9 +183,8 @@
     % Ten per cent is enough to settle it, and no more than that: by 0.80 the
     % autumn colour has gone grey and the cover looks faded rather than quiet.
     % Change the one number.
-    \node[above right, inner sep=0pt, opacity=0.90]
-      at (current page.south west)
-      {\includegraphics[width=\paperwidth]{\slateBackground}};
+    \node[inner sep=0pt, opacity=0.90] at (current page.center)
+      {\slatecover{\slateBackground}};
 
     % The double stroke and the shading are what lift the box off a photograph
     % busy enough to swallow a plain panel. shading angle=60 runs the gradient

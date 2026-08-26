@@ -117,6 +117,16 @@ the whole title page, and the watermark — needs the previous pass's `.aux`. A
 single `xelatex` leaves the cover blank and reports nothing. `check.sh` always
 builds twice; if you build by hand, do the same.
 
+**A cover photograph that does not cover the page.** The deck is 16:10 and most
+photographs are 16:9. `\includegraphics[width=\paperwidth]` scales the picture
+to the paper's width and leaves it about a tenth of the page short — a white
+band across the top that is easy to miss on a thumbnail. Giving both `width`
+and `height` distorts the picture; adding `keepaspectratio` letterboxes it,
+which is the same gap arrived at politely. `\slatecover` measures the image at
+full width and scales by height instead when that is not tall enough, and the
+node sits at `current page.center` so whichever dimension overruns is cropped
+evenly by the page edge. Both the cover and the watermark go through it.
+
 **A title box over a pale sky.** The box is `AnalogousColor-1` shaded from 75%
 to 25% at `shading angle=60`, double-stroked. The double stroke and the
 diagonal gradient are both there so that neither edge matches the photograph
@@ -148,6 +158,7 @@ too tall*, and that one is exact.
 |---|---|
 | the palette | one `\definecolor` and seven derivations, then the beamer colour assignments |
 | `\newcolouredblock` | the block factory, and the seven it builds |
+| `\slatecover{file}` | scales an image to cover the slide at any aspect ratio, without distorting it |
 | `\slateWatermark` | the cover photograph on every slide at 6.7% |
 | `\slatetitlepage` | full-bleed photograph, double-stroked gradient title box, author/affiliation/date/logo |
 | `\swot` | the 3×3 grid, its axis labels and its mixed quadrant colours |
