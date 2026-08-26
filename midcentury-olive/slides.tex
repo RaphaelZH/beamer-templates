@@ -1,0 +1,229 @@
+% =============================================================================
+% midcentury-olive — skeleton.
+%
+%   ./check.sh          build twice, then report only the frames that overflow
+%   ./check.sh --clean  remove build artefacts
+%
+% XeLaTeX, always twice. See README.md before editing anything in tdstyle.tex.
+%
+% Everything below is a worked example of one construct. Delete what you do not
+% need; keep the preamble.
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{beamerthememidcenturymodern}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, raster}
+\usepackage{booktabs}
+\usepackage{array}      % >{...} column prefixes — needed for ragged-right p{}
+\usepackage{microtype}
+\usepackage{listings}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+
+\input{tdstyle}
+\oliveTheme
+
+% -----------------------------------------------------------------------------
+% ANY COMMAND WITH AN ARGUMENT GOES HERE, NEVER INSIDE A FRAME.
+% Beamer reads a frame body more than once. \newcommand inside one either
+% redefines itself ("already defined") or mangles its parameter ("Illegal
+% parameter number"). Both cost a build. See README.md.
+% -----------------------------------------------------------------------------
+\newcommand{\srcline}[1]{%
+  \noindent\hangindent=1.0em\hangafter=1
+  \textcolor{oliveGreen}{\textbullet}\hspace{0.5em}#1\par}
+
+% Code blocks: monospace, small, pale ground, no syntax colouring to argue with
+% the accent. aboveskip matters when a listing sits in a columns[T] — see the
+% worked example below.
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{oliveInk!85},
+  backgroundcolor=\color{oliveGreen!6},
+  frame=none, xleftmargin=0.6em, xrightmargin=0.6em,
+  framexleftmargin=0.6em, framexrightmargin=0.6em,
+  aboveskip=0.7em, belowskip=0.5em,
+  breaklines=false, showstringspaces=false, columns=fullflexible,
+  literate={—}{{---}}1 {…}{{\ldots}}1 {é}{{\'e}}1 {è}{{\`e}}1,
+}
+
+% Declared ONCE. A second \title silently overwrites the first — including any
+% \\ you put in it. The optional argument is the footer's short form and must
+% stay on one line.
+\title[Short title for the footer]{%
+  A title that may\\break across lines}
+\subtitle{One break at most, and put it at a comma}
+\author[Family Name]{Given Family}
+\institute{Your institution}
+
+% Aligned left to the right stem of the U in the logo below. A fixed-width box,
+% not a nudge: the date is set flush right, so padding would put its LEFT edge
+% wherever the string happened to end. Re-measure if the logo height changes.
+\date{\makebox[2.413cm][l]{\MakeUppercase{\today}}}
+
+% logo-trim.png, not logo.png: the original carries transparent padding, and the
+% template positions the image box rather than the ink.
+\titlegraphic{\includegraphics[height=1.5cm]{figures/logo-trim.png}}
+
+\AtBeginSection[]{%
+  \begin{frame}[plain, noframenumbering]
+    \sectionpage
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% =============================================================================
+% \tdsection{title}{subtitle} — one command taking both. \AtBeginSection
+% typesets the divider the moment \section runs, so a subtitle set on the next
+% line arrives too late and is silently dropped.
+%
+% Convention worth keeping: the TITLE states the section's claim or scope; the
+% SUBTITLE names the evidence. A subtitle that restates the title, or that gives
+% away the finding the pages have to earn, leaves those pages nothing to do.
+% =============================================================================
+\tdsection{What this section establishes}{%
+  Where the evidence comes from, and how it was read.}
+
+% -----------------------------------------------------------------------------
+% Prose page. \parskip carries the structure; do not trade it away for space.
+% If a page runs over, cut a sentence before you cut the gaps between them.
+% -----------------------------------------------------------------------------
+\begin{frame}{A page of prose}
+
+  \acb{A bolded accent lead} states the point, and the sentences after it carry
+  the argument. \ac{Accent} marks a term; \code{a literal} is set in the mono
+  face and follows the surrounding size.
+
+  A second paragraph, because two paragraphs read as two points and one long
+  one reads as none.
+
+  \aside{The note at the foot. It has a rule above it, sits at
+  \code{scriptsize}, and takes a shrinkable gap so that a full page does not
+  push it into the footer.}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Card row. \stepcard takes an optional width multiplier; the multipliers in a
+% row should sum to the card count. Only reach for it when one card's text is
+% much longer than the others — and note that evening out the widths does not
+% reduce the row's height, which is set by the tallest card.
+% -----------------------------------------------------------------------------
+\begin{frame}{A row of cards}
+
+  \begin{stepflow}{3}
+    \stepcard{first}{what goes in}
+    \steparrow
+    \stepcard{second}{what happens to it}
+    \steparrow
+    \stepcard{third}{what comes out}
+  \end{stepflow}
+
+  \vspace{0.7em}
+  {\small
+  \acb{The prose under a card row says what the cards cannot.} Restating a card
+  in a sentence is the commonest way these pages run over.\par}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Table. p{} columns, never l — l cannot wrap and will run off the page. Prefix
+% every column with >{\raggedright\arraybackslash} unless you want it justified;
+% at these widths justification hyphenates badly.
+% -----------------------------------------------------------------------------
+\begin{frame}{A table}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm}
+                    >{\raggedright\arraybackslash}p{4.6cm}
+                    >{\raggedright\arraybackslash}p{5.0cm}@{}}
+    \toprule
+    & \thead{first heading} & \thead{second heading} \\
+    \midrule
+    \textbf{row label} & a cell that wraps at the width you gave it
+      & another \\
+    \textbf{row label} & keep row labels short: a wrapped LABEL sets the row
+      height even when both cells beside it are one line & another \\
+    \bottomrule
+  \end{tabular}\par}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% Code beside prose. Two traps, both worked around here:
+%   columns[T] aligns on the top of each column's first box, so a listing's
+%     aboveskip pushes the code down against the prose. Zero it, then measure:
+%     at \scriptsize against \small prose, about 5pt puts the first lines level.
+%   \vspace{0pt} at the top of each column is the [T] reference. A \strut with a
+%     negative \baselineskip is NOT — it prints line one on top of line two.
+% -----------------------------------------------------------------------------
+\begin{frame}[fragile]{Code beside prose}
+
+  \begin{columns}[T]
+    \begin{column}{0.53\textwidth}
+      \vspace{0pt}
+      \lstset{basicstyle=\ttfamily\scriptsize\color{oliveInk!85}, aboveskip=5pt}
+\begin{lstlisting}
+{
+  "a": "listing",
+  "b": ["kept", "short"]
+}
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \vspace{0pt}
+      {\small\setlength{\parskip}{0.7em}%
+      Prose beside code. Say what the listing is for; do not read it out.\par}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% A TikZ figure. Rules that were learned the hard way:
+%   draw only what the data says — an edge you added to carry a caption is a
+%     claim, and a caption naming a value that is not in the picture points at
+%     nothing;
+%   route lines out of a node's free side. Leaving from an edge that has text
+%     beside it strikes that text out;
+%   two arrowheads on the same few millimetres of border become one smudge:
+%     give the second a yshift;
+%   set the figure's font once and let \code follow it.
+% -----------------------------------------------------------------------------
+\begin{frame}{A figure}
+
+  \centering
+  \begin{tikzpicture}[
+    font=\fontsize{6.6}{8}\selectfont,
+    nd/.style={draw=oliveGreen!55, line width=0.7pt, rounded corners=1pt,
+               inner sep=3pt, fill=olivePaper},
+    key/.style={nd, draw=oliveGreen, line width=0.9pt},
+    ed/.style={draw=oliveGreen!75, line width=0.85pt,
+               -{Stealth[length=3.6pt,width=3.6pt]}},
+    lab/.style={font=\fontsize{5.9}{7.2}\selectfont\itshape, text=oliveInk!55,
+                inner sep=1.5pt},
+  ]
+    \node[key] (a) at (0,0)   {\code{start}};
+    \node[nd]  (b) at (3.2,0) {\code{end}};
+    \draw[ed] (a) -- (b) node[lab, midway, above] {\code{edge}};
+  \end{tikzpicture}
+
+  \vspace{0.5em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   A note under a figure, set at the figure's own size. Apparatus should never
+   be larger than what it annotates.\par}
+
+  \vspace{0.5em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   \setlength{\parskip}{0.2em}%
+   \srcline{\textbf{Bulleted note} — defined in the preamble, because a
+   \textbackslash newcommand inside a frame does not survive beamer's second
+   read.}}
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,204 @@
+# midcentury-olive
+
+Extracted from *From Thing Descriptions to a Safety Ontology* (August 2026)
+after that deck was finished. Copy this directory, replace `slides.tex`, keep
+everything else.
+
+Licensing is in [LICENSE](LICENSE): three different licences, because the theme,
+the additions and the fonts came from three different places.
+
+## Before you build: the logo
+
+`figures/logo-trim.png` is a **placeholder** — a grey box reading YOUR LOGO
+HERE. No institution's logo ships with this template: a mark is its owner's
+trademark, a licence on the files around it does not extend to it, and a public
+repository is not the place to redistribute one.
+
+Drop your own in, then re-measure two things in `slides.tex`, both of which were
+fitted to a particular logo and will be wrong for yours:
+
+* `\titlegraphic{...height=1.5cm}` — the height;
+* `\date{\makebox[2.413cm][l]{...}}` — the width that aligns the date's left
+  edge to a feature of the logo above it. This is a fixed-width box rather than
+  a nudge, because the date is set flush right: padding it would put its *left*
+  edge wherever the string happened to end.
+
+The placeholder is deliberately ugly. It builds, so a fresh clone works, and it
+is impossible to leave in by accident.
+
+## Attribution — required, not optional
+
+The theme underneath is **midcentury modern** by **Jules Leguy**
+(<https://github.com/jules-leguy/midcenturymodern>), used under **CC BY 4.0**.
+
+That licence is not a courtesy. Distributing a modified version obliges you to
+name the creator, give the source and the licence, and **indicate that changes
+were made**. All four are in the header of `beamerthememidcenturymodern.sty` and
+at the top of `tdstyle.tex`, where the changes are listed.
+
+Two consequences worth being clear about:
+
+* **Renaming the file would not remove the obligation — it would sharpen it.**
+  The more the origin is obscured, the more the attribution has to be explicit.
+* Keep it in the source files, not only here. A `.sty` gets copied into a new
+  project on its own; a README does not travel with it.
+
+`beamerthememidcenturymodern.sty` is upstream verbatim apart from six comment
+lines in its header. Every addition lives in `tdstyle.tex`, so the theme can be
+re-downloaded and dropped in without losing anything.
+
+## Why the file is still called that
+
+`mcm` — the prefix on `mcmPrimary`, `mcmBg`, `mcmBlack` and the rest — stands
+for *mid-century modern*, the name of the theme this is built on. It is someone
+else's word and it means nothing here, so **nothing in your slide source needs
+to type it**: `tdstyle.tex` defines `oliveGreen`, `oliveInk` and `olivePaper`, and
+the skeleton uses only those.
+
+They are aliases, not renames, and deliberately so. The `.sty` refers to `mcm*`
+throughout; renaming inside it would mean giving up the ability to drop in a new
+upstream release, in exchange for tidying a prefix that then appears in nothing
+but a file nobody edits. If you ever do decide to fork it properly, rename the
+file *and* keep the attribution — see above.
+
+```
+./check.sh          build twice, report only real overflows
+./check.sh --clean  remove build artefacts
+```
+
+---
+
+## Build it twice. Always.
+
+`./check.sh` does. A single `xelatex` run leaves the section dividers and study
+dividers **blank** — they are drawn with `remember picture, overlay`, whose
+coordinates come from the previous pass's `.aux`. This bit us: three pages
+rendered as bare text with no background, and the cause was a one-pass build
+left over from a measurement loop.
+
+XeLaTeX, not LuaLaTeX. LuaLaTeX is unusable in the container we build in
+(`module 'luaotfload-main' not found`; `texlive-luatex` is absent).
+
+---
+
+## These stop the build
+
+**`\newcommand` with an argument, inside a frame.** Beamer reads a frame body
+more than once. You get `Illegal parameter number in definition of
+\beamer@doifinframe`, or `already defined` on the second pass. Cost us two
+builds, once for a table column prefix and once for a bulleted-note command.
+**Every command with an argument goes in the preamble.**
+
+**`l` columns in a `tabular` with cells that need to wrap.** `l` cannot break a
+line; one table ran 212pt — over 7cm — past the right margin. Use `p{}`, and
+prefix with `>{\raggedright\arraybackslash}` unless you want justification.
+
+---
+
+## These render wrong and say nothing
+
+**A second `\title`.** It silently overwrites the first, including any `\\` in
+it. Declare it once.
+
+**`\par` written outside a size group.** LaTeX sets a whole paragraph with the
+`\baselineskip` in force when the paragraph *ends*. `{\scriptsize #1}\par`
+therefore leads the text at the outer size — in `\stepcard` this made the card
+bodies 40% too open, and only on the lines the size change was meant to cover.
+Write `{\scriptsize #1\par}`.
+
+**A hardcoded size inside a semantic command.** `\code` used to carry
+`\footnotesize`. Inside a figure set at 6.6pt every literal became the largest
+thing on the line. It now scales from the ambient size (`\tdCodeScale`) and
+forces `\upshape`, because monospace slanted by a surrounding `\itshape` stops
+reading as code.
+
+**Fonts loaded by family name.** `smcp` is present only when the face is loaded
+**by filename**; by fontconfig family name the feature silently does not apply.
+And a font that is not installed is silently substituted — an early draft ran in
+Helvetica on a machine without Lato and looked merely "a bit off". Everything is
+bundled under `fonts/` and loaded by path for exactly this reason.
+
+**`align=` inside a TikZ node.** It installs its own paragraph settings and
+overrides `\raggedright` and `\hyphenpenalty` set in the node text. Use
+`align=flush left` for ragged right, and `\hyphenchar\font=-1` — a font
+property, which `align=` cannot override — to stop hyphenation.
+
+**`columns[T]` with a listing in one column.** `[T]` aligns on the top of each
+column's first box, so the listing's `aboveskip` pushes the code down. Zero it
+and then *measure*: at `\scriptsize` against `\small` prose, about 5pt puts the
+two first lines level. Open each column with `\vspace{0pt}` — that is the `[T]`
+reference. `\strut\vspace{-\baselineskip}` is **not**: it prints line one on top
+of line two.
+
+**`\aside` on a full page.** Its `\vfill` has nothing left to push with, so the
+rule lands against the last line of prose. It carries a `0.9em minus 0.85em`
+floor: a gap when there is room, collapsible when there is not. A *rigid* floor
+put two already-fitting frames back over the edge.
+
+---
+
+## Noise in the log, verified and filtered
+
+**`Overfull \hbox (21.33955pt too wide)`, once per titled frame.** The frame
+title is a full-bleed colour band — a `beamercolorbox` of `wd=\paperwidth` set
+in a context whose measure is `\textwidth`. It is meant to run to both paper
+edges. An untitled frame does not report it, which is how it was pinned down.
+`check.sh` counts these and suppresses them; any *other* `\hbox` warning is real.
+
+**Small constant `Overfull \vbox` on template-drawn `[plain]` pages.** The title
+page and the section dividers report values like `7.1597pt` and `3.77133pt` that
+respond to nothing — not to the section title's length, not to the logo height,
+not to deleting the frame before them. Both pages were rendered at 130dpi and
+read: nothing is clipped. They are the templates measuring their own
+absolutely-positioned overlay, which contributes no height to the page. **Do not
+chase these.** Roughly an hour went into one of them before that was established.
+
+---
+
+## What is in `tdstyle.tex`
+
+| | |
+|---|---|
+| `\oliveTheme` | the palette. Type `oliveGreen` (accent), `oliveInk` (text), `olivePaper` (ground), `oliveRust` (alert), `oliveTeal` (example) |
+| `\ac{...}` | a term, in accent colour |
+| `\acb{...}` | a named thing — a standard, a tool, a study — accent and bold |
+| `\code{...}` | a literal. Follows the ambient size, always upright |
+| `\aside{...}` | the note at the foot of a frame, above a hairline rule |
+| `\slidelead{...}` | a frame's opening line, under the title band |
+| `stepflow` / `\stepcard` / `\steparrow` | the card row. `\stepcard[w]` takes a width multiplier; the multipliers in a row should sum to the card count |
+| `\tdsection{title}{subtitle}` | a section divider. **Takes both at once** — `\AtBeginSection` typesets the divider the moment `\section` runs, so a subtitle set on the following line arrives too late and is dropped |
+| `\tdstudy{label}{title}{body}` | a divider *inside* a section. Quieter than a section page: thin spine, no page-wide fill |
+
+`figures/trim.py` crops a transparent border off a generated PNG, keeping 8px.
+A bare `getbbox()` crop makes the figure effectively wider and taller inside the
+space it occupies, which is enough to disturb a height tuned by eye.
+
+---
+
+## Conventions the deck was written to
+
+Not enforced by the machinery, but the pages assume them.
+
+**Dividers.** Title states the section's claim or scope; subtitle names the
+evidence. A subtitle that restates the title, or that announces the finding the
+pages have to earn, leaves those pages with nothing to deliver. Three of the
+five were rewritten for exactly this.
+
+**Citations.** `\acb{Name et al., YYYY}` in prose, every time it appears — a rule
+keyed to "first mention in a frame" has to be re-checked on every edit and rots
+silently when a page moves. `\textbf{}` inside tables (that is the first-column
+label style) and for paragraph leads that are not names.
+
+**Cards and prose.** The cards carry the mechanics; the prose carries the
+argument. Restating a card in the paragraph under it is the commonest way these
+pages run over — it happened on four of them.
+
+**Figures.** Draw only what the data says. An edge added to carry a caption is a
+claim; a caption naming a value that is not in the picture points at nothing.
+Both mistakes were made and caught: an invented `rotate → basic_sc` edge, and
+two captions turning on `safe` and `nosec`, neither of which was drawn.
+
+**Overflow.** When a page runs over, find what actually sets its height — the
+tallest card in a row, the taller of two columns, a wrapped row *label*.
+Shrinking anything else is wasted effort. Cut a sentence before you cut the gaps
+between paragraphs: the gaps are what mark where one point ends.

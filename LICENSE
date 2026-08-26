@@ -1,0 +1,17 @@
+There is no single licence for this repository.
+
+Each template directory starts from a different upstream theme, under whatever
+terms that theme carries, and bundles fonts under their own. Putting one licence
+at the root would misstate all of them.
+
+    midcentury-olive/LICENSE
+
+Look there. Each of those files lists three things separately: the theme and its
+author, the additions made here, and the fonts.
+
+The README files, this file, and anything else at the top level of this
+repository are under Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+
+No institution's logo is distributed anywhere in this repository. A trademark is
+not covered by a licence on the files around it.
