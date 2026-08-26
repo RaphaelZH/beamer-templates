@@ -635,3 +635,71 @@
     \end{minipage}}%
 }
 \makeatother
+
+
+% ---- the palette this template mixes from ----------------------------------
+%
+% helpful/harmful take the two colours the deck already reserves for meaning —
+% teal for the example, rust for the alert — and the two origins take the
+% primary and the ink. Every quadrant is then half of one axis and half of the
+% other, at a tint low enough that the grid stays quieter than the text in it.
+\colorlet{swotHelpful} {oliveTeal!55}
+\colorlet{swotHarmful} {oliveRust!55}
+\colorlet{swotInternal}{oliveGreen!28}
+\colorlet{swotExternal}{oliveInk!18}
+\colorlet{swotInk}{oliveInk}
+\colorlet{S}{swotHelpful!50!swotInternal}
+\colorlet{W}{swotHarmful!50!swotInternal}
+\colorlet{O}{swotHelpful!50!swotExternal}
+\colorlet{T}{swotHarmful!50!swotExternal}
+
+\tcbset{
+  swotbox/.style     ={size=normal, boxrule=0pt, colback=#1,
+                       watermark text=#1, width=.5\linewidth-5mm},
+  swotheader/.style  ={size=small, boxrule=0pt, width=.5\linewidth-5mm,
+                       colback=#1, valign=center, halign=center},
+  swotfirstcol/.style={swotheader=#1, width=1cm},
+}
+% -----------------------------------------------------------------------------
+% SWOT
+%
+% \swot{strengths}{weaknesses}{opportunities}{threats} — a 3x3 raster: a blank
+% corner, two column headers, and two rows each opening with a rotated label.
+%
+% The four quadrant colours are MIXED rather than picked, which is what keeps
+% the grid readable: every quadrant is half "helpful/harmful" and half
+% "internal/external", so the two axes are legible in the colour itself and a
+% reader can place a quadrant without reading its label.
+%
+% The letter watermarked in each quadrant is the tcolorbox colour name. That is
+% deliberate — it labels the quadrant without spending a line on a heading.
+% -----------------------------------------------------------------------------
+\newcommand{\swotAxisHelpful}{Helpful\par\tiny (to achieve the objective)}
+\newcommand{\swotAxisHarmful}{Harmful\par\tiny (to achieve the objective)}
+\newcommand{\swotAxisInternal}{Internal origin\\\tiny (of the thing itself)}
+\newcommand{\swotAxisExternal}{External origin\\\tiny (of its environment)}
+
+\newcommand{\swot}[4]{%
+  \begin{center}
+  \begin{tcbitemize}[raster columns=3, raster rows=3, enhanced, sharp corners,
+                     raster valign=center,
+                     raster equal height=rows, raster force size=false,
+                     raster column skip=0pt, raster row skip=0pt]
+    \tcbitem[blankest, width=1cm]
+    \tcbitem[swotheader=swotHelpful] {\color{swotInk}\swotAxisHelpful}
+    \tcbitem[swotheader=swotHarmful] {\color{swotInk}\swotAxisHarmful}
+
+    \tcbitem[swotfirstcol=swotInternal]
+      {\rotatebox[origin=c]{90}{\parbox[t]{2.4cm}{\centering
+        \color{swotInk}\swotAxisInternal\par}}}
+    \tcbitem[swotbox=S] #1
+    \tcbitem[swotbox=W] #2
+
+    \tcbitem[swotfirstcol=swotExternal]
+      {\rotatebox[origin=c]{90}{\parbox[b]{2.4cm}{\centering
+        \color{swotInk}\swotAxisExternal\par}}}
+    \tcbitem[swotbox=O] #3
+    \tcbitem[swotbox=T] #4
+  \end{tcbitemize}
+  \end{center}%
+}

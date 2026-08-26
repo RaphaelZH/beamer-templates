@@ -171,6 +171,48 @@
 
 \end{frame}
 
+% -----------------------------------------------------------------------------
+% Blocks. Nothing to configure: the theme styles all three, and \oliveTheme has
+% already pointed its alert and example colours at oliveRust and oliveTeal.
+% Those two were picked to be the palette's only non-derived colours precisely
+% so that a block reads as a change of register and not as decoration.
+% -----------------------------------------------------------------------------
+\begin{frame}{Blocks}
+
+  \begin{block}{A plain block}
+    Set apart without being flagged — a definition, or the rule a page turns
+    on. Same ground as the page; only the title marks it.
+  \end{block}
+
+  \begin{exampleblock}{An example block}
+    Teal, for the instance that makes an abstract point concrete. Worth a block
+    when the example is worth returning to.
+  \end{exampleblock}
+
+  \begin{alertblock}{An alert block}
+    Rust, for what will be got wrong — a limitation, a failure mode, the case
+    that does not hold. Used sparingly it carries weight; used on every page it
+    is just a colour.
+  \end{alertblock}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% SWOT. \swot takes the four quadrants; the axes and the mixing are in the
+% style file. Keep the contents short — the grid gives each quadrant a quarter
+% of the slide, and four lines is what fits.
+% -----------------------------------------------------------------------------
+\begin{frame}{A SWOT grid}
+
+  \vspace{-0.6em}
+  \swot
+    {\scriptsize a strength, and a second one}
+    {\scriptsize a weakness}
+    {\scriptsize an opportunity, and a second}
+    {\scriptsize a threat}
+
+\end{frame}
+
 \begin{frame}[fragile]{Code beside prose}
 
   \begin{columns}[T]

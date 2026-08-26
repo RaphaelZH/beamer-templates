@@ -153,6 +153,13 @@ read: nothing is clipped. They are the templates measuring their own
 absolutely-positioned overlay, which contributes no height to the page. **Do not
 chase these.** Roughly an hour went into one of them before that was established.
 
+**A constant `Overfull \hbox` on the SWOT page** — `12.3812pt` here, `6.03252pt`
+in `slate-blocks/`. It does not move when the quadrant boxes are narrowed
+(tested at 5, 6, 7 and 8 mm of inset), when `raster width` is set explicitly, or
+when the raster's left and right skips are zeroed. The page was rendered and the
+grid sits inside both margins. Same rule as above: **a number that does not
+change when you change the thing it names is not measuring that thing.**
+
 ---
 
 ## What is in `tdstyle.tex`
@@ -168,6 +175,7 @@ chase these.** Roughly an hour went into one of them before that was established
 | `stepflow` / `\stepcard` / `\steparrow` | the card row. `\stepcard[w]` takes a width multiplier; the multipliers in a row should sum to the card count |
 | `\tdsection{title}{subtitle}` | a section divider. **Takes both at once** — `\AtBeginSection` typesets the divider the moment `\section` runs, so a subtitle set on the following line arrives too late and is dropped |
 | `\tdstudy{label}{title}{body}` | a divider *inside* a section. Quieter than a section page: thin spine, no page-wide fill |
+| `\swot{S}{W}{O}{T}` | the 3×3 grid. Quadrant colours are *mixed* from the two axes rather than picked, so both axes are legible in the colour itself. Requires `\usepackage{tcolorbox}` and `\tcbuselibrary{skins, raster}` in the preamble. Keep each quadrant to about four lines |
 
 `figures/trim.py` crops a transparent border off a generated PNG, keeping 8px.
 A bare `getbbox()` crop makes the figure effectively wider and taller inside the

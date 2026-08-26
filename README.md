@@ -13,12 +13,28 @@ combine two.
 | | | |
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
+| [`slate-blocks/`](slate-blocks/) | pdfLaTeX or XeLaTeX · stock fonts · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
+
+Both carry the same `\swot` grid, each in its own palette.
+
+**midcentury-olive**
 
 <p align="center">
   <img src="midcentury-olive/screenshots/title.png" width="49%">
   <img src="midcentury-olive/screenshots/cards.png" width="49%"><br>
   <img src="midcentury-olive/screenshots/table.png" width="49%">
-  <img src="midcentury-olive/screenshots/figure.png" width="49%">
+  <img src="midcentury-olive/screenshots/figure.png" width="49%"><br>
+  <img src="midcentury-olive/screenshots/blocks.png" width="49%">
+  <img src="midcentury-olive/screenshots/swot.png" width="49%">
+</p>
+
+**slate-blocks**
+
+<p align="center">
+  <img src="slate-blocks/screenshots/title.png" width="49%">
+  <img src="slate-blocks/screenshots/prose.png" width="49%"><br>
+  <img src="slate-blocks/screenshots/blocks.png" width="49%">
+  <img src="slate-blocks/screenshots/swot.png" width="49%">
 </p>
 
 ## Every template ships a demo
@@ -50,10 +66,12 @@ a deck whose type size changes from page to page.
 positioned with `remember picture` needs the previous pass's `.aux`, and a
 one-pass build leaves those pages blank without complaining.
 
-**Bundle the fonts, load them by filename.** A font that is not installed is
-substituted in silence, and a deck that looked fine on one machine is set in
-Helvetica on another. Loading by fontconfig family name also loses OpenType
-features — `smcp` in particular — with no warning.
+**Bundle the fonts, load them by filename** — or use none at all. A font that is
+not installed is substituted in silence, and a deck that looked fine on one
+machine is set in Helvetica on another. Loading by fontconfig family name also
+loses OpenType features — `smcp` in particular — with no warning.
+`slate-blocks/` sidesteps this by staying on the stock faces; `midcentury-olive/`
+carries its two in `fonts/`.
 
 **Carry its own licence, and its upstream's.** Most of these start from someone
 else's theme. The obligation travels with the files, so the licence lives in the
@@ -76,10 +94,11 @@ Overleaf compiles these as they are — the fonts are in the repository and are
 loaded by path, so there is nothing to install. Two settings, once per project,
 under *Menu*:
 
-* **Compiler: XeLaTeX.** The default is pdfLaTeX, which cannot load an OpenType
-  font by filename and will fail on the first `\setsansfont`.
-* **Main document:** `midcentury-olive/slides.tex`, or `demo.tex` to see it
-  filled in.
+* **Compiler: XeLaTeX** — required for `midcentury-olive/`. The default is
+  pdfLaTeX, which cannot load an OpenType font by filename and will fail on the
+  first `\setsansfont`. `slate-blocks/` builds under either.
+* **Main document:** `midcentury-olive/slides.tex` or `slate-blocks/slides.tex`,
+  or the `demo.tex` beside it to see the template filled in.
 
 The quickest route in is *New Project → Import from GitHub*, which keeps the
 link so a later `git push` shows up there. Uploading a zip works too and does
