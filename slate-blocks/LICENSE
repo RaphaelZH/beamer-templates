@@ -34,12 +34,33 @@ figures/background.png
     \slateBackground is one line in style.tex, and the watermark on every
     other slide reads from the same file.
 
-    If you do replace it, look at two things. The title box is a pale
-    gradient, so it disappears over a pale sky; and the watermark sits at
-    6.7%, which was set against an image of this lightness.
+    If you do replace it, expect to re-measure the title page. Nothing on it
+    is boxed, so where each line sits was chosen from where this picture is
+    flat and pale. The watermark sits at 6.7%, which was set against an image
+    of this lightness.
 
 
-3. THE LOGO PLACEHOLDER
+3. THE TYPEFACE
+---------------
+fonts/Cormorant/
+
+    Cormorant, copyright (c) 2015 Christian Thalmann (Catharsis Fonts).
+    Licensed under the SIL Open Font License, Version 1.1.
+    The full licence is in fonts/Cormorant/OFL.txt, with the upstream
+    FONTLOG.txt and README.md beside it.
+
+    The files are redistributed unmodified. Six of the family's thirty faces
+    are here, which is what this deck uses; taking a subset is permitted and
+    changes nothing about the terms.
+
+    The OFL is not CC BY and does not merge into it. It travels with the font
+    files: keep this notice and OFL.txt with them, and do not sell the fonts
+    on their own. Bundling them inside something you sell is allowed; selling
+    them by themselves is not. If you swap Cormorant out, delete this section
+    along with the directory — the obligation goes with the files.
+
+
+4. THE LOGO PLACEHOLDER
 -----------------------
 figures/logo.png
 

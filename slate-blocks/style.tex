@@ -9,33 +9,60 @@
 % =============================================================================
 
 % -----------------------------------------------------------------------------
-% THE TYPEFACES
+% THE TYPEFACE
 %
-% TeX Gyre Pagella (Palatino, 1949) for the roman, TeX Gyre Heros (Helvetica,
-% 1957) for the sans. Beamer sets its body in the sans, so Heros is what most
-% of the deck is in; \textrm reaches for Pagella, which is what the title and
-% subtitle use.
+% Cormorant, by Christian Thalmann, bundled in fonts/Cormorant/ under the SIL
+% Open Font License. One family for the whole deck — roman and sans slots both
+% — so nothing can fall back to Computer Modern halfway down a page.
 %
-% WHY THESE AND NOT A BUNDLED FONT
+% XELATEX ONLY. This is what the font costs.
 %
-% This template's one promise that midcentury-olive/ cannot make is that it
-% builds under pdfLaTeX as well as XeLaTeX. An OpenType face would mean
-% fontspec, and fontspec means XeLaTeX only — it would cost the second engine,
-% the engine=pdflatex in the README's Overleaf button, and the small zip.
+% Cormorant is distributed as OpenType, OpenType means fontspec, and fontspec
+% means XeLaTeX or LuaLaTeX. This template used to build under pdfLaTeX too and
+% no longer does: check.sh already defaults to xelatex, but ENGINE=pdflatex now
+% fails on the first \setmainfont, and the README's "Open in Overleaf" link
+% carries engine=xelatex for the same reason.
 %
-% TeX Gyre ships with every TeX Live and is on Overleaf, so there is nothing to
-% bundle and nothing to install. It also sidesteps the trap that made
-% midcentury-olive/ carry its fonts in the first place: a face that is not
-% installed gets substituted in silence, and the deck that looked right on one
-% machine is set in something else on another. A missing package is a build
-% error; a missing font is not.
+% LOADED BY FILENAME, FROM Path, NOT BY FAMILY NAME.
 %
-% Both are period faces, which suits the photograph, but they are not a RETRO
-% pairing and that is deliberate — midcentury-olive/ already occupies that
-% ground with EB Garamond and Montserrat, and the point of keeping two
-% templates is to have something to choose between.
-\usepackage{tgpagella}
-\usepackage{tgheros}
+% A family name is resolved by fontconfig against what happens to be installed
+% on the machine, and when it is not installed the substitution is SILENT — the
+% deck that looked right here is set in something else there. A path that does
+% not resolve is a build error. This is the same reason midcentury-olive/
+% carries its fonts, and it is why the .otf files are in the repository rather
+% than being a thing you are told to install.
+%
+% MEDIUM, NOT REGULAR. Cormorant is a display face: the designer drew it for
+% large sizes, and at body size Regular is too light to hold a projector.
+% Medium is the lightest weight that survives the footline.
+%
+% SmallCapsFont IS NOT OPTIONAL. Cormorant ships its small caps as a separate
+% family rather than as an smcp feature inside the roman, so \textsc finds
+% nothing to switch to and renders as ordinary lowercase — silently. That
+% matters here because \newcolouredblock sets every block label in \textsc and
+% the frame titles are small caps too. Naming CormorantSC explicitly is what
+% makes those come out as small caps at all.
+%
+% Six faces are bundled, which is what this deck uses. The full family is 30
+% files — Light, Infant, Unicase, Upright and the rest — and the upstream
+% archive has them if a deck wants one.
+\usepackage{fontspec}
+\setmainfont{Cormorant-Medium.otf}[
+  Path             = fonts/Cormorant/,
+  BoldFont         = Cormorant-Bold.otf,
+  ItalicFont       = Cormorant-MediumItalic.otf,
+  BoldItalicFont   = Cormorant-BoldItalic.otf,
+  SmallCapsFont    = CormorantSC-Medium.otf,
+  BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
+]
+\setsansfont{Cormorant-Medium.otf}[
+  Path             = fonts/Cormorant/,
+  BoldFont         = Cormorant-Bold.otf,
+  ItalicFont       = Cormorant-MediumItalic.otf,
+  BoldItalicFont   = Cormorant-BoldItalic.otf,
+  SmallCapsFont    = CormorantSC-Medium.otf,
+  BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
+]
 
 \usepackage{xcolor}
 \usepackage{etoolbox}   % \BeforeBeginEnvironment, used by the block factory

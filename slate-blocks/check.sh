@@ -48,8 +48,11 @@ if [ "${1:-}" = "--clean" ]; then
   exit 0
 fi
 
-# Either engine works — both load fonts through fontspec. xelatex is the
-# default because it is what these files were verified with, and it is faster.
+# xelatex or lualatex — both load fonts through fontspec. NOT pdflatex: the
+# deck bundles Cormorant as OpenType and reaches it by path, which pdflatex
+# cannot do, so ENGINE=pdflatex dies on the first \setmainfont. It used to
+# work, before the font. xelatex is the default because it is what these files
+# were verified with, and it is faster.
 #
 # The one measurable difference is microtype: under XeTeX only character
 # protrusion is available, while LuaTeX also does font expansion. It matters

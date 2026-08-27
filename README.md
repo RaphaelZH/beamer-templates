@@ -13,7 +13,7 @@ combine two.
 | | | |
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
-| [`slate-blocks/`](slate-blocks/) | pdfLaTeX or XeLaTeX · TeX Gyre Pagella + Heros · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
+| [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant bundled · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
 
 Both carry the same `\swot` grid, each in its own palette.
 
@@ -66,14 +66,18 @@ a deck whose type size changes from page to page.
 positioned with `remember picture` needs the previous pass's `.aux`, and a
 one-pass build leaves those pages blank without complaining.
 
-**Bundle the fonts, load them by filename** — or take them from a package that
-every TeX Live has. What is not allowed is naming a face and hoping: a font
+**Bundle the fonts, load them by filename.** Never name a face and hope. A font
 that is not installed is substituted in silence, and a deck that looked fine on
-one machine is set in Helvetica on another. Loading by fontconfig family name
-also loses OpenType features — `smcp` in particular — with no warning.
-`midcentury-olive/` carries its two in `fonts/`; `slate-blocks/` uses TeX Gyre,
-which is a `\usepackage` away and therefore fails loudly if it is missing at
-all. Both routes turn a silent substitution into an error.
+one machine is set in Helvetica on another; a path that does not resolve is a
+build error. Loading by fontconfig family name also loses OpenType features —
+`smcp` in particular — with no warning. `midcentury-olive/` carries EB Garamond
+and Montserrat in `fonts/`; `slate-blocks/` carries Cormorant.
+
+And check what a family actually ships. Cormorant puts its small caps in a
+separate family rather than in an `smcp` feature, so `\textsc` finds nothing to
+switch to and quietly sets ordinary lowercase — which would have taken every
+block label and frame title in `slate-blocks/` with it. `SmallCapsFont` in the
+`\setmainfont` call is what makes them small caps at all.
 
 **Carry its own licence, and its upstream's.** Most of these start from someone
 else's theme. The obligation travels with the files, so the licence lives in the
@@ -96,7 +100,7 @@ Overleaf compiles these as they are — the fonts are in the repository and are
 loaded by path, so there is nothing to install.
 
 [![Open midcentury-olive in Overleaf](https://img.shields.io/badge/Open%20in%20Overleaf-midcentury--olive-47A141?logo=overleaf&logoColor=white)](https://www.overleaf.com/docs?snip_uri=https://github.com/RaphaelZH/beamer-templates/releases/latest/download/midcentury-olive.zip&engine=xelatex&main_document=slides.tex)
-[![Open slate-blocks in Overleaf](https://img.shields.io/badge/Open%20in%20Overleaf-slate--blocks-47A141?logo=overleaf&logoColor=white)](https://www.overleaf.com/docs?snip_uri=https://github.com/RaphaelZH/beamer-templates/releases/latest/download/slate-blocks.zip&engine=pdflatex&main_document=slides.tex)
+[![Open slate-blocks in Overleaf](https://img.shields.io/badge/Open%20in%20Overleaf-slate--blocks-47A141?logo=overleaf&logoColor=white)](https://www.overleaf.com/docs?snip_uri=https://github.com/RaphaelZH/beamer-templates/releases/latest/download/slate-blocks.zip&engine=xelatex&main_document=slides.tex)
 
 Those buttons hand Overleaf a zip of one template, and it unpacks it into a new
 project — engine and main document already set, nothing to configure. Swap
@@ -131,8 +135,8 @@ If you upload by hand, set two things under *Menu*:
 
 * **Compiler: XeLaTeX** — required for `midcentury-olive/`. The default is
   pdfLaTeX, which cannot load an OpenType font by filename and will fail on the
-  first `\setsansfont`. `slate-blocks/` builds under either, so it needs no
-  change.
+  first `\setsansfont`. `slate-blocks/` needs it too, for the same reason —
+  it bundles Cormorant and reaches it through fontspec.
 * **Main document:** `slides.tex`, or `demo.tex` to see the template filled in.
 
 What you lose on Overleaf is `check.sh`: it reads the log and tells you which

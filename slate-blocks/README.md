@@ -13,18 +13,21 @@ changes nothing about the colours.
 ./check.sh demo     build demo.tex — every construct, filled
 ```
 
-pdfLaTeX or XeLaTeX; either works. The type is TeX Gyre Pagella (Palatino) and
-TeX Gyre Heros (Helvetica), loaded as ordinary packages — TeX Gyre ships with
-every TeX Live and is on Overleaf, so unlike `midcentury-olive/` there is no
-font directory and nothing to install. It also cannot go wrong quietly: a
-missing package is a build error, where a missing font is a silent
-substitution.
+**XeLaTeX.** The type is Cormorant, by Christian Thalmann, bundled in
+`fonts/Cormorant/` under the SIL Open Font License and loaded by path. Nothing
+to install; nothing that can be silently substituted. This template did build
+under pdfLaTeX until the font arrived — OpenType means `fontspec` and
+`fontspec` means XeLaTeX, and that is the price. `check.sh` already defaults to
+`xelatex`, so nothing about the workflow changes; `ENGINE=pdflatex` now fails
+on the first `\setmainfont`.
 
-Building under both engines is this template's one advantage over
-`midcentury-olive/`, and it is what rules out an OpenType face here — that
-would mean `fontspec`, and `fontspec` means XeLaTeX only. Neither face is a
-retro pairing, deliberately: `midcentury-olive/` already occupies that ground,
-and the point of keeping two templates is to have something to choose between.
+Six faces are bundled, which is what the deck uses: Medium and Bold, their
+italics, and the two matching small-caps faces. The family has 30 — Light,
+Infant, Unicase, Upright and the rest — and the upstream archive has them.
+
+**Medium, not Regular.** Cormorant is a display face, drawn for large sizes.
+Regular is too light to hold a projector at body size; Medium is the lightest
+weight that survives the footline.
 
 ## Before you build: the cover, and the logo
 
@@ -139,6 +142,16 @@ the pixel. **Run `./check.sh demo` twice after you clone, and twice after any
 change to `\slatetitlepage`.** This is why the committed screenshots look right
 despite the trap: they were taken from an already-settled `.aux`.
 
+**Small caps that are not small caps.** Cormorant ships its small caps as a
+separate family, `CormorantSC`, rather than as an `smcp` feature inside the
+roman. So `\textsc` finds nothing to switch to and sets ordinary lowercase
+instead — no error, no warning, just a page that looks subtly wrong. It would
+have taken every block label with it, because `\newcolouredblock` sets all
+seven in `\textsc`, and the frame titles too. Naming `SmallCapsFont` and
+`BoldFeatures = {SmallCapsFont = ...}` in the `\setmainfont` call is what makes
+them small caps at all. Check this on any font you swap in: whether a family
+carries `smcp` or ships SC as separate files is not something you can assume.
+
 **A cover photograph that does not cover the page.** The deck is 16:10 and most
 photographs are 16:9. `\includegraphics[width=\paperwidth]` scales the picture
 to the paper's width and leaves it about a tenth of the page short — a white
@@ -185,13 +198,15 @@ not already white.
 
 ## Noise in the log
 
-The SWOT page reports one `Overfull \hbox` of about six points. This README
+The SWOT page reports one `Overfull \hbox` of about seven points. This README
 used to call it a phantom of the raster, on the evidence that narrowing the
 quadrant boxes at four different widths never moved it. That evidence was
 sound and the conclusion was wrong: it is not the quadrants, it is the `\tiny`
-parenthetical in the rotated axis label, which measures 77.5pt inside a 71.1pt
-`\parbox`. A number that does not move when you change one thing may still be
-measuring another.
+parenthetical in the rotated axis label, which overruns the 71.1pt `\parbox`
+it is set in. A number that does not move when you change one thing may still
+be measuring another. It moves when you change the right thing: the same
+warning reads 6.03pt in Computer Modern, 6.30pt in Heros and 7.05pt in
+Cormorant, because it is a piece of text that is too wide for its box.
 
 It is explained but not fixed, because the obvious fix trades it for a worse
 warning. Widening that `\parbox` to 3.2cm silences the `\hbox` and produces an
