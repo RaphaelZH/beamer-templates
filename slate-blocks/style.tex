@@ -8,6 +8,35 @@
 % Load after \documentclass and the \usetheme lines. See README.md.
 % =============================================================================
 
+% -----------------------------------------------------------------------------
+% THE TYPEFACES
+%
+% TeX Gyre Pagella (Palatino, 1949) for the roman, TeX Gyre Heros (Helvetica,
+% 1957) for the sans. Beamer sets its body in the sans, so Heros is what most
+% of the deck is in; \textrm reaches for Pagella, which is what the title and
+% subtitle use.
+%
+% WHY THESE AND NOT A BUNDLED FONT
+%
+% This template's one promise that midcentury-olive/ cannot make is that it
+% builds under pdfLaTeX as well as XeLaTeX. An OpenType face would mean
+% fontspec, and fontspec means XeLaTeX only — it would cost the second engine,
+% the engine=pdflatex in the README's Overleaf button, and the small zip.
+%
+% TeX Gyre ships with every TeX Live and is on Overleaf, so there is nothing to
+% bundle and nothing to install. It also sidesteps the trap that made
+% midcentury-olive/ carry its fonts in the first place: a face that is not
+% installed gets substituted in silence, and the deck that looked right on one
+% machine is set in something else on another. A missing package is a build
+% error; a missing font is not.
+%
+% Both are period faces, which suits the photograph, but they are not a RETRO
+% pairing and that is deliberate — midcentury-olive/ already occupies that
+% ground with EB Garamond and Montserrat, and the point of keeping two
+% templates is to have something to choose between.
+\usepackage{tgpagella}
+\usepackage{tgheros}
+
 \usepackage{xcolor}
 \usepackage{etoolbox}   % \BeforeBeginEnvironment, used by the block factory
 \usepackage{tikz}
@@ -160,8 +189,9 @@
 % -----------------------------------------------------------------------------
 % THE TITLE PAGE
 %
-% \slatetitlepage — a full-bleed photograph with the title in a double-stroked
-% box over it, the box shaded from one analogous colour to the other.
+% \slatetitlepage — a full-bleed photograph with the type set straight onto it:
+% title and author block in the sky, the date on the ground below the tree
+% line, the logo in the top-right corner. Nothing is boxed.
 %
 % Set the five commands below it first. They are separate commands rather than
 % arguments because the title page is the one place a deck wants long strings
@@ -173,7 +203,7 @@
 \newcommand{\slateAuthor}   {Author}
 \newcommand{\slateAffiliate}{Affiliation}
 \newcommand{\slateDate}     {\today}
-\newcommand{\slateLogo}     {\includegraphics[width=0.25\paperwidth]{figures/logo.png}}
+\newcommand{\slateLogo}     {\includegraphics[width=0.18\paperwidth]{figures/logo.png}}
 
 \newcommand{\slatetitlepage}{%
   \begin{tikzpicture}[remember picture, overlay]
@@ -191,29 +221,69 @@
     \node[inner sep=0pt, opacity=0.55] at (current page.center)
       {\slatecover{\slateBackground}};
 
-    % The double stroke and the shading are what lift the box off a photograph
-    % busy enough to swallow a plain panel. shading angle=60 runs the gradient
-    % across the diagonal rather than flat, so neither edge matches the photo
-    % behind it for long.
-    \node[
-      above=0.5cm, align=center,
-      draw=AnalogousColor-1!50,
-      left color=AnalogousColor-1!75, right color=AnalogousColor-1!25,
-      shading angle=60,
-      double, double distance=0.1cm,
-      inner xsep=15pt, inner ysep=10pt,
-      minimum width=0.7\textwidth, text width=0.6\textwidth,
-      color=AnalogousColor-2!250,
-    ] (title) at (current page.center)
-      {\LARGE\slateTitle \\[5pt] \small\slateSubTitle};
+    % NO PANEL, AND WHY NOT.
+    %
+    % There used to be a double-stroked, shaded box behind the title here. Its
+    % stated job was to lift the title off "a photograph busy enough to swallow
+    % a plain panel". Measure the ground it actually sat on and the premise
+    % fails: the sky behind it runs at sd 4.2 with no pixel darker than
+    % (213,228,245). The panel was armour against a busyness that is not there,
+    % and its hard border was the loudest edge on the page.
+    %
+    % What IS busy is the band of crowns across the middle, from about 0.61 of
+    % the page height to 0.86. So the type is placed around that band instead
+    % of being armoured against it: this block above it, the date below it.
+    % Read the numbers in these comments as worst-case contrast against the
+    % darkest single pixel under each line, not against its average.
+    %
+    % ANY NEW PHOTOGRAPH INVALIDATES ALL OF IT. These offsets are measurements
+    % of one picture, not a layout that adapts. Change \slateBackground and the
+    % first thing to do is find where its flat ground is.
+    %
+    % !300 rather than the !250 used elsewhere: with no panel the type is read
+    % against the sky directly, and at !250 the subtitle came to 3.58:1, under
+    % the 4.5:1 that text this size wants. !300 gives title 5.53:1 and subtitle
+    % 5.74:1.
+    \node[anchor=north, align=center, text width=0.62\paperwidth,
+          color=AnalogousColor-2!300]
+      (title) at ([yshift=-0.28\paperheight]current page.north)
+      {\LARGE\slateTitle \\[6pt] \small\slateSubTitle};
 
-    \node[below=0.5cm]  (author)    at (title.south)
+    % These two stay at !250 — they are still on sky, at 5.28:1 and 5.35:1.
+    % \slateAffiliate is the lowest line of the block and clears the crowns by
+    % about 0.02\paperheight. That is the whole budget: pushing this block
+    % further down puts the affiliation into the trees.
+    \node[below=0.55cm] (author)    at (title.south)
       {\color{AnalogousColor-1!250}\slateAuthor};
-    \node[below=0.25cm] (affiliate) at (author.south)
+    \node[below=0.22cm] (affiliate) at (author.south)
       {\color{AnalogousColor-1!250}\small\slateAffiliate};
-    \node[below=0.25cm] (date)      at (affiliate.south)
-      {\color{AnalogousColor-1!250}\large\slateDate};
-    \node[opacity=0.67, below=1cm]  at (affiliate.south) {\slateLogo};
+
+    % The date is deliberately NOT in that chain. It sits on the field below
+    % the tree line, which is the only other flat ground this photograph has:
+    % from 0.86 of the page down it runs at sd 8 with nothing darker than 188.
+    % Putting it there leaves the trees between the two blocks rather than
+    % behind either, and it is why the block above can sit as low as it does.
+    %
+    % !300 too, but for the opposite reason: the field is darker than the sky,
+    % 188 against 232 at worst, and at !250 the date came to 3.32:1. !300 puts
+    % it at 5.41:1. In the position it used to occupy — bottom centre, over the
+    % maple — it was 1.78:1.
+    %
+    % So !300 is the LIGHTEST this line can be while it stands on the field,
+    % and shrinking it does not relax that — smaller type wants 4.5:1 where
+    % \large only wanted 3:1. Anyone who wants it lighter has to move it back
+    % up into the sky with the rest of the block, where !250 reaches 5.2:1.
+    \node[anchor=south] (date)
+      at ([yshift=0.081\paperheight]current page.south)
+      {\color{AnalogousColor-1!300}\small\slateDate};
+
+    % Top-right, which is the flattest and palest patch on the page: mean 244,
+    % sd 4.4. Bottom centre, where this used to be, is the worst: mean 189,
+    % sd 29. Nothing here draws a box — the thin rectangle visible in demo.pdf
+    % is inside figures/logo.png, the placeholder, and goes with a real mark.
+    \node[anchor=north east, opacity=0.67]
+      at ([xshift=-0.045\paperwidth, yshift=-0.055\paperheight]current page.north east)
+      {\slateLogo};
 
   \end{tikzpicture}%
 }
@@ -275,14 +345,34 @@
     \tcbitem[swotheader=swotHelpful] {\color{swotInk}\swotAxisHelpful}
     \tcbitem[swotheader=swotHarmful] {\color{swotInk}\swotAxisHarmful}
 
+    % 2.5cm, not the 2.4cm this used to be. The parbox is rotated, so this
+    % number is the length the label has ALONG the row; the column's own 1cm is
+    % how many stacked lines fit across it.
+    %
+    % 2.4cm = 68.3pt, and "External origin" in Heros measures 69.8pt. It wrapped
+    % to two lines, which made four lines in a column that holds three, and the
+    % \tiny second line was pushed out of the box — it is simply missing from
+    % the render. "Internal origin" is 66.2pt and fitted, which is why only one
+    % of the two labels broke and why it was easy to miss. Any change of font
+    % has to be re-checked here; 2.5cm = 71.1pt leaves 1.3pt of slack.
+    %
+    % WHILE HERE — the deck's one standing Overfull \hbox is explained, though
+    % not fixed. README.md called it a phantom of the raster, on the grounds
+    % that narrowing the quadrant boxes never moved it. It is not the
+    % quadrants: it is the \tiny parenthetical in THIS parbox, which measures
+    % 77.5pt against the box's 71.1pt. Widening to 3.2cm does silence it — and
+    % costs an Overfull \vbox of 16.5pt instead, because the parbox width is
+    % the rotated label's height and the grid then no longer fits the frame.
+    % The ceiling is about 2.62cm and the label wants 2.73cm, so the last ~3pt
+    % has to come from shorter axis text, not from this number.
     \tcbitem[swotfirstcol=swotInternal]
-      {\rotatebox[origin=c]{90}{\parbox[t]{2.4cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[t]{2.5cm}{\centering
         \color{swotInk}\swotAxisInternal\par}}}
     \tcbitem[swotbox=S] #1
     \tcbitem[swotbox=W] #2
 
     \tcbitem[swotfirstcol=swotExternal]
-      {\rotatebox[origin=c]{90}{\parbox[b]{2.4cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[b]{2.5cm}{\centering
         \color{swotInk}\swotAxisExternal\par}}}
     \tcbitem[swotbox=O] #3
     \tcbitem[swotbox=T] #4

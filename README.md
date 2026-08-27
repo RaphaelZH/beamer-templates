@@ -13,7 +13,7 @@ combine two.
 | | | |
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
-| [`slate-blocks/`](slate-blocks/) | pdfLaTeX or XeLaTeX · stock fonts · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
+| [`slate-blocks/`](slate-blocks/) | pdfLaTeX or XeLaTeX · TeX Gyre Pagella + Heros · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
 
 Both carry the same `\swot` grid, each in its own palette.
 
@@ -66,12 +66,14 @@ a deck whose type size changes from page to page.
 positioned with `remember picture` needs the previous pass's `.aux`, and a
 one-pass build leaves those pages blank without complaining.
 
-**Bundle the fonts, load them by filename** — or use none at all. A font that is
-not installed is substituted in silence, and a deck that looked fine on one
-machine is set in Helvetica on another. Loading by fontconfig family name also
-loses OpenType features — `smcp` in particular — with no warning.
-`slate-blocks/` sidesteps this by staying on the stock faces; `midcentury-olive/`
-carries its two in `fonts/`.
+**Bundle the fonts, load them by filename** — or take them from a package that
+every TeX Live has. What is not allowed is naming a face and hoping: a font
+that is not installed is substituted in silence, and a deck that looked fine on
+one machine is set in Helvetica on another. Loading by fontconfig family name
+also loses OpenType features — `smcp` in particular — with no warning.
+`midcentury-olive/` carries its two in `fonts/`; `slate-blocks/` uses TeX Gyre,
+which is a `\usepackage` away and therefore fails loudly if it is missing at
+all. Both routes turn a silent substitution into an error.
 
 **Carry its own licence, and its upstream's.** Most of these start from someone
 else's theme. The obligation travels with the files, so the licence lives in the

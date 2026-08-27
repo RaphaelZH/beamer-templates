@@ -13,8 +13,18 @@ changes nothing about the colours.
 ./check.sh demo     build demo.tex — every construct, filled
 ```
 
-pdfLaTeX or XeLaTeX; either works. Nothing here loads a font by filename, so
-unlike `midcentury-olive/` there is no font directory and nothing to install.
+pdfLaTeX or XeLaTeX; either works. The type is TeX Gyre Pagella (Palatino) and
+TeX Gyre Heros (Helvetica), loaded as ordinary packages — TeX Gyre ships with
+every TeX Live and is on Overleaf, so unlike `midcentury-olive/` there is no
+font directory and nothing to install. It also cannot go wrong quietly: a
+missing package is a build error, where a missing font is a silent
+substitution.
+
+Building under both engines is this template's one advantage over
+`midcentury-olive/`, and it is what rules out an OpenType face here — that
+would mean `fontspec`, and `fontspec` means XeLaTeX only. Neither face is a
+retro pairing, deliberately: `midcentury-olive/` already occupies that ground,
+and the point of keeping two templates is to have something to choose between.
 
 ## Before you build: the cover, and the logo
 
@@ -27,10 +37,13 @@ watercolour. It is used twice — full-bleed on the title page, and again at
 \renewcommand{\slateBackground}{figures/background.png}   % if you want them different
 ```
 
-Replace it and check two things. The title box is a pale gradient, so it
-vanishes over a pale sky — look at the cover, not at the thumbnail. And 6.7%
-was set against an image of this lightness; a darker photograph at the same
-opacity will fight the body text.
+Replace it and expect to re-measure the title page. Nothing on it is boxed —
+the type sits on the photograph — so where each line lands was chosen from
+where *this* picture is flat and pale, and a new one moves all of it. The
+offsets and the two `!300` tints in `\slatetitlepage` carry the numbers they
+were set from. Check the watermark too: 6.7% was set against an image of this
+lightness, and a darker photograph at the same opacity will fight the body
+text.
 
 `figures/logo.png` is a placeholder. No institution's mark ships here — a logo
 is its owner's trademark and the licence on these files does not extend to it.
@@ -117,6 +130,15 @@ the whole title page, and the watermark — needs the previous pass's `.aux`. A
 single `xelatex` leaves the cover blank and reports nothing. `check.sh` always
 builds twice; if you build by hand, do the same.
 
+**Two passes, on a clean tree.** Twice is enough to hold a settled layout, and
+not enough to reach one. On a fresh clone, or on the first build after moving
+anything on the title page, `check.sh` produces a title page with the
+photograph out of position and the type missing — silently, with no warning in
+the log. The third pass settles it, and every `check.sh` after that agrees to
+the pixel. **Run `./check.sh demo` twice after you clone, and twice after any
+change to `\slatetitlepage`.** This is why the committed screenshots look right
+despite the trap: they were taken from an already-settled `.aux`.
+
 **A cover photograph that does not cover the page.** The deck is 16:10 and most
 photographs are 16:9. `\includegraphics[width=\paperwidth]` scales the picture
 to the paper's width and leaves it about a tenth of the page short — a white
@@ -127,20 +149,32 @@ full width and scales by height instead when that is not tall enough, and the
 node sits at `current page.center` so whichever dimension overruns is cropped
 evenly by the page edge. Both the cover and the watermark go through it.
 
-**A title box over a pale sky.** The box is `AnalogousColor-1` shaded from 75%
-to 25% at `shading angle=60`, double-stroked. The double stroke and the
-diagonal gradient are both there so that neither edge matches the photograph
-behind it for long. Over a flat pale ground they are invisible and the box
-looks like a bug.
+**A panel defending against a busyness that is not there.** There used to be a
+double-stroked, shaded box behind the title, on the reasoning that a photograph
+can be busy enough to swallow a plain panel. It can — but measure the ground
+under the box before believing it does. Under the current cover the sky there
+runs at sd 4.2 with no pixel darker than `(213,228,245)`, so the box was armour
+against nothing, and its hard border was the loudest edge on the page.
+
+There is no panel now. The type is set straight onto the photograph, placed
+around the band of crowns rather than over it: title, author and affiliation
+above it, the date on the field below it, the logo in the top-right corner.
+Every line was checked against the darkest single pixel beneath it, and the
+worst of them is 5.28:1.
+
+**Those offsets are measurements of one photograph.** They are not a layout that
+adapts. Replace `\slateBackground` and the first thing to do is find where the
+new picture's flat ground is; the second is to re-check the two `!300` tints,
+which exist because a specific patch of sky and a specific patch of field were
+a specific brightness.
 
 **The watermark at the wrong strength.** 6.7% reads as paper texture. At 15% it
 reads as an image, and the body text has to fight it. It is one number in
 `\slateWatermark`, and it is worth re-checking after you change the photograph.
 
 **Cover opacity.** The photograph is laid down at `opacity=0.55`. At full
-strength it and the title box sit at the same weight and the box stops reading
-as something over it; below about 0.5 the picture stops looking held back and
-starts looking faded.
+strength it comes up to the weight of the type over it; below about 0.5 it
+stops looking held back and starts looking faded.
 
 The usual recipe is two layers — the image at 0.65 with a white rectangle at
 0.15 over it. It is not worth the second layer here. The page behind is white,
@@ -151,13 +185,23 @@ not already white.
 
 ## Noise in the log
 
-Titled frames on this theme report an `Overfull \hbox` of a few points that
-does not respond to the width of anything on the page — it was traced by
-building the SWOT page at four different grid widths and getting the same
-`6.03252pt` each time. `check.sh` reports it rather than hiding it; if a number
-does not move when you change the thing it names, it is not measuring that
-thing. The report that matters is the first section, *frames whose content is
-too tall*, and that one is exact.
+The SWOT page reports one `Overfull \hbox` of about six points. This README
+used to call it a phantom of the raster, on the evidence that narrowing the
+quadrant boxes at four different widths never moved it. That evidence was
+sound and the conclusion was wrong: it is not the quadrants, it is the `\tiny`
+parenthetical in the rotated axis label, which measures 77.5pt inside a 71.1pt
+`\parbox`. A number that does not move when you change one thing may still be
+measuring another.
+
+It is explained but not fixed, because the obvious fix trades it for a worse
+warning. Widening that `\parbox` to 3.2cm silences the `\hbox` and produces an
+`Overfull \vbox` of 16.5pt instead — the parbox is rotated, so its width is the
+label's height, and the grid stops fitting the frame. The ceiling is about
+2.62cm; the label wants 2.73cm. Closing the last three points means shorter
+axis text, not a bigger box.
+
+The report that matters is the first section, *frames whose content is too
+tall*, and that one is exact.
 
 ## What is in `style.tex`
 
@@ -167,7 +211,7 @@ too tall*, and that one is exact.
 | `\newcolouredblock` | the block factory, and the seven it builds |
 | `\slatecover{file}` | scales an image to cover the slide at any aspect ratio, without distorting it |
 | `\slateWatermark` | the cover photograph on every slide at 6.7% |
-| `\slatetitlepage` | full-bleed photograph, double-stroked gradient title box, author/affiliation/date/logo |
+| `\slatetitlepage` | full-bleed photograph, type set straight onto it — title block in the sky, date on the field, logo top-right |
 | `\swot` | the 3×3 grid, its axis labels and its mixed quadrant colours |
 
 Load it after `\documentclass` and the `\usetheme` lines. The five title-page
