@@ -153,12 +153,25 @@ read: nothing is clipped. They are the templates measuring their own
 absolutely-positioned overlay, which contributes no height to the page. **Do not
 chase these.** Roughly an hour went into one of them before that was established.
 
-**A constant `Overfull \hbox` on the SWOT page** — `12.3812pt` here, `6.03252pt`
-in `slate-blocks/`. It does not move when the quadrant boxes are narrowed
-(tested at 5, 6, 7 and 8 mm of inset), when `raster width` is set explicitly, or
-when the raster's left and right skips are zeroed. The page was rendered and the
-grid sits inside both margins. Same rule as above: **a number that does not
-change when you change the thing it names is not measuring that thing.**
+**The SWOT page's `Overfull \hbox` is gone, and it was not a phantom.** This
+section used to file the `12.3812pt` here — and the `6.03252pt` in
+`slate-blocks/` — beside the two above, on the evidence that it did not move
+when the quadrant boxes were narrowed (5, 6, 7 and 8 mm of inset), when
+`raster width` was set explicitly, or when the raster's skips were zeroed. All
+of that was true, and the conclusion drawn from it was wrong.
+
+It was the rotated axis label in the first column, too wide for the `\parbox`
+it is set in — which is neither the quadrants nor the raster, so of course
+none of those tests moved it. **A number that does not move when you change one
+thing may still be measuring another.** The `\parbox` went from 2.4cm to 2.7cm
+and the log is clean.
+
+The fix is not the same in both templates, which is worth knowing before
+copying one into the other. Here, widening the box is enough. In
+`slate-blocks/` it is not: that deck is 16:10 with less vertical room, the
+rotated `\parbox`'s width is the label's height, and widening it far enough
+produces an `Overfull \vbox` before it silences the `\hbox`. There the note is
+set a point smaller instead. Same cause, same page, two different levers.
 
 ---
 

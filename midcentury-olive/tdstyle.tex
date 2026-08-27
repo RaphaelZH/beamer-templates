@@ -676,8 +676,16 @@
 % -----------------------------------------------------------------------------
 \newcommand{\swotAxisHelpful}{Helpful\par\tiny (to achieve the objective)}
 \newcommand{\swotAxisHarmful}{Harmful\par\tiny (to achieve the objective)}
-\newcommand{\swotAxisInternal}{Internal origin\\\tiny (of the thing itself)}
-\newcommand{\swotAxisExternal}{External origin\\\tiny (of its environment)}
+% 5pt rather than \tiny's 6pt, and 2.7cm rather than the 2.4cm the parbox used
+% to be. Both were needed to clear an Overfull \hbox this grid had reported
+% since it was written — see README.md, which used to file it as a phantom of
+% the raster and was wrong about that.
+%
+% Kept identical to slate-blocks/, deliberately. The two templates had drifted
+% into different axis wording without anyone deciding they should.
+\newcommand{\swotAxisNote}{\fontsize{5}{6}\selectfont}
+\newcommand{\swotAxisInternal}{Internal origin\\\swotAxisNote (attributes of the thing itself)}
+\newcommand{\swotAxisExternal}{External origin\\\swotAxisNote (attributes of its environment)}
 
 \newcommand{\swot}[4]{%
   \begin{center}
@@ -690,13 +698,13 @@
     \tcbitem[swotheader=swotHarmful] {\color{swotInk}\swotAxisHarmful}
 
     \tcbitem[swotfirstcol=swotInternal]
-      {\rotatebox[origin=c]{90}{\parbox[t]{2.4cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[t]{2.7cm}{\centering
         \color{swotInk}\swotAxisInternal\par}}}
     \tcbitem[swotbox=S] #1
     \tcbitem[swotbox=W] #2
 
     \tcbitem[swotfirstcol=swotExternal]
-      {\rotatebox[origin=c]{90}{\parbox[b]{2.4cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[b]{2.7cm}{\centering
         \color{swotInk}\swotAxisExternal\par}}}
     \tcbitem[swotbox=O] #3
     \tcbitem[swotbox=T] #4

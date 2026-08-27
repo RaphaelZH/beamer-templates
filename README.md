@@ -15,7 +15,10 @@ combine two.
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
 | [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant + Red Hat Text bundled · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
 
-Both carry the same `\swot` grid, each in its own palette.
+Both carry the same `\swot` grid, each in its own palette — the same axis
+wording, the same 5pt notes, the same command. They had drifted apart; they
+are back in step, and the one place they still differ on purpose is written
+down in each `README.md`.
 
 **midcentury-olive**
 
