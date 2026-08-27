@@ -401,10 +401,28 @@
 % The letter watermarked in each quadrant is the tcolorbox colour name. That is
 % deliberate — it labels the quadrant without spending a line on a heading.
 % -----------------------------------------------------------------------------
+% The two ROTATED notes are set at 5pt rather than \tiny, which is 6pt here.
+% That one point is what finally cleared the Overfull \hbox this grid had
+% reported since it was written — the log is now empty for the first time.
+%
+% Widening the parbox does not do it. Tried: the warning holds at 6.24pt at
+% 2.7cm, 2.9cm and 3.0cm without moving a hair, and by 2.9cm an Overfull \vbox
+% appears instead, because the parbox width is the rotated label's height.
+% Only making the text narrower works, and there are exactly two ways to do
+% that — fewer words or smaller words. midcentury-olive/ took the first and
+% says "(of the thing itself)"; this takes the second and keeps the wording.
+%
+% Worth the point: at 6pt the note wrapped to two lines and sat cramped beside
+% the axis name. At 5pt it is one line running parallel to it, which is both
+% tidier and what makes the label two lines rather than three.
+%
+% The HORIZONTAL notes stay at \tiny. They have the full width of a column and
+% no reason to shrink.
+\newcommand{\swotAxisNote}{\fontsize{5}{6}\selectfont}
 \newcommand{\swotAxisHelpful}{Helpful\par\tiny (to achieve the objective)}
 \newcommand{\swotAxisHarmful}{Harmful\par\tiny (to achieve the objective)}
-\newcommand{\swotAxisInternal}{Internal origin\\\tiny (attributes of the thing itself)}
-\newcommand{\swotAxisExternal}{External origin\\\tiny (attributes of its environment)}
+\newcommand{\swotAxisInternal}{Internal origin\\\swotAxisNote (attributes of the thing itself)}
+\newcommand{\swotAxisExternal}{External origin\\\swotAxisNote (attributes of its environment)}
 
 \newcommand{\swot}[4]{%
   \begin{center}
@@ -437,15 +455,13 @@
     % is NOT a reliable check — it under-reported by enough to look safe at
     % 2.5cm when it was not. Build the deck and look at the page.
     %
-    % WHILE HERE — the deck's one standing Overfull \hbox is explained, though
-    % not fixed. README.md called it a phantom of the raster, on the grounds
-    % that narrowing the quadrant boxes never moved it. It is not the
-    % quadrants: it is the \tiny parenthetical in THIS parbox, which is wider
-    % than the box whatever the box is set to within reach. Widening far enough
-    % to silence it (3.2cm) costs an Overfull \vbox of about 16pt instead,
-    % because the parbox width is the rotated label's height and the grid then
-    % no longer fits the frame. The remaining few points have to come from
-    % shorter axis text, not from this number.
+    % WHILE HERE — the Overfull \hbox this grid used to report is gone, and it
+    % was never what README.md said it was. It called it a phantom of the
+    % raster, on the grounds that narrowing the quadrant boxes never moved it.
+    % That evidence was sound and the conclusion was wrong: it was the note in
+    % THIS parbox, too wide for its box. Widening the box does not help — see
+    % the note above \swotAxisNote — so the note is set a point smaller, and
+    % the log is clean.
     \tcbitem[swotfirstcol=swotInternal]
       {\rotatebox[origin=c]{90}{\parbox[t]{2.7cm}{\centering
         \color{swotInk}\swotAxisInternal\par}}}

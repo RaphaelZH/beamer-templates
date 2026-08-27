@@ -221,25 +221,28 @@ not already white.
 
 ## Noise in the log
 
-The SWOT page reports one `Overfull \hbox` of about seven points. This README
-used to call it a phantom of the raster, on the evidence that narrowing the
-quadrant boxes at four different widths never moved it. That evidence was
-sound and the conclusion was wrong: it is not the quadrants, it is the `\tiny`
-parenthetical in the rotated axis label, which overruns the 71.1pt `\parbox`
-it is set in. A number that does not move when you change one thing may still
-be measuring another. It moves when you change the right thing: the same
-warning changes with every change of face, because it is a piece of text that
-is too wide for its box.
+There is none. `./check.sh` and `./check.sh demo` both report nothing, under
+either document, which took a while to arrive at.
 
-It is explained but not fixed, because the obvious fix trades it for a worse
-warning. Widening that `\parbox` to 3.2cm silences the `\hbox` and produces an
-`Overfull \vbox` of 16.5pt instead — the parbox is rotated, so its width is the
-label's height, and the grid stops fitting the frame. The ceiling is about
-2.62cm; the label wants 2.73cm. Closing the last three points means shorter
-axis text, not a bigger box.
+This README used to describe a standing `Overfull \hbox` on the SWOT page as a
+phantom of the raster, on the evidence that narrowing the quadrant boxes at
+four different widths never moved it. The evidence was sound and the
+conclusion was wrong. It was never the quadrants: it was the parenthetical
+note in the rotated axis label, too wide for the `\parbox` it sits in. A
+number that does not move when you change one thing may still be measuring
+another.
 
-The report that matters is the first section, *frames whose content is too
-tall*, and that one is exact.
+Widening the box does not fix it — the warning holds at 6.24pt at 2.7cm, 2.9cm
+and 3.0cm without moving, and by 2.9cm an `Overfull \vbox` appears instead,
+because the parbox is rotated and its width is the label's height. The only
+lever is making the text narrower, and there are two ways: fewer words or
+smaller words. `midcentury-olive/` took the first and says "(of the thing
+itself)". Here the note is set at 5pt instead of `\tiny`'s 6pt, which keeps
+the wording and, as it turns out, looks better — at 6pt it wrapped to two
+cramped lines, at 5pt it is one line running parallel to the axis name.
+
+If a warning does appear, the section that matters is the first one, *frames
+whose content is too tall*. That one is exact.
 
 ## What is in `style.tex`
 
