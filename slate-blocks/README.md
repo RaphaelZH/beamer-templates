@@ -137,10 +137,17 @@ looks like a bug.
 reads as an image, and the body text has to fight it. It is one number in
 `\slateWatermark`, and it is worth re-checking after you change the photograph.
 
-**Cover opacity.** The photograph is laid down at `opacity=0.90`. At full
+**Cover opacity.** The photograph is laid down at `opacity=0.55`. At full
 strength it and the title box sit at the same weight and the box stops reading
-as something over it; by 0.80 the colour has gone grey and the cover looks
-faded rather than quiet.
+as something over it; below about 0.5 the picture stops looking held back and
+starts looking faded.
+
+The usual recipe is two layers — the image at 0.65 with a white rectangle at
+0.15 over it. It is not worth the second layer here. The page behind is white,
+so the veil does nothing the opacity cannot, and the two render to within one
+part in 255 of a single `opacity=0.5525`. That was measured by differencing the
+two PNGs, not assumed. A white veil only earns its place over a ground that is
+not already white.
 
 ## Noise in the log
 

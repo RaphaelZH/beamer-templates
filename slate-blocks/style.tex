@@ -178,12 +178,17 @@
 \newcommand{\slatetitlepage}{%
   \begin{tikzpicture}[remember picture, overlay]
 
-    % opacity=0.90. At full strength the photograph and the title box sit at
-    % the same weight and the box stops reading as something laid over it.
-    % Ten per cent is enough to settle it, and no more than that: by 0.80 the
-    % autumn colour has gone grey and the cover looks faded rather than quiet.
-    % Change the one number.
-    \node[inner sep=0pt, opacity=0.90] at (current page.center)
+    % opacity=0.55 — the photograph held back far enough that the title box
+    % reads as something laid over it rather than as another thing at the same
+    % weight. The sky keeps its blue and the maple its red down to about here;
+    % below 0.5 the picture stops looking held back and starts looking faded.
+    %
+    % The usual recipe for this is two layers — the image at 0.65 and a white
+    % rectangle at 0.15 over it. Do not bother. The page behind is white, so
+    % the veil does nothing the opacity cannot: the two render to within one
+    % part in 255 of a single opacity of 0.5525, which was measured, not
+    % assumed. One number, one place to change it.
+    \node[inner sep=0pt, opacity=0.55] at (current page.center)
       {\slatecover{\slateBackground}};
 
     % The double stroke and the shading are what lift the box off a photograph
