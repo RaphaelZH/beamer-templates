@@ -13,7 +13,7 @@ combine two.
 | | | |
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
-| [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant bundled · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
+| [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant + Red Hat Text bundled · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
 
 Both carry the same `\swot` grid, each in its own palette.
 
@@ -71,7 +71,9 @@ that is not installed is substituted in silence, and a deck that looked fine on
 one machine is set in Helvetica on another; a path that does not resolve is a
 build error. Loading by fontconfig family name also loses OpenType features —
 `smcp` in particular — with no warning. `midcentury-olive/` carries EB Garamond
-and Montserrat in `fonts/`; `slate-blocks/` carries Cormorant.
+and Montserrat in `fonts/`; `slate-blocks/` carries Cormorant and Red Hat Text.
+Both templates split the work the same way: a text face for what you read a
+paragraph of, a display face for what you read one line of.
 
 And check what a family actually ships. Cormorant puts its small caps in a
 separate family rather than in an `smcp` feature, so `\textsc` finds nothing to
@@ -136,7 +138,7 @@ If you upload by hand, set two things under *Menu*:
 * **Compiler: XeLaTeX** — required for `midcentury-olive/`. The default is
   pdfLaTeX, which cannot load an OpenType font by filename and will fail on the
   first `\setsansfont`. `slate-blocks/` needs it too, for the same reason —
-  it bundles Cormorant and reaches it through fontspec.
+  it bundles Cormorant and Red Hat Text and reaches them through fontspec.
 * **Main document:** `slides.tex`, or `demo.tex` to see the template filled in.
 
 What you lose on Overleaf is `check.sh`: it reads the log and tells you which

@@ -40,24 +40,33 @@ figures/background.png
     of this lightness.
 
 
-3. THE TYPEFACE
----------------
-fonts/Cormorant/
+3. THE TYPEFACES
+----------------
+fonts/Cormorant/    the display face — title page, frame titles, block labels
+fonts/RedHatText/   the text face — body, bullets, tables, the footline
 
     Cormorant, copyright (c) 2015 Christian Thalmann (Catharsis Fonts).
-    Licensed under the SIL Open Font License, Version 1.1.
-    The full licence is in fonts/Cormorant/OFL.txt, with the upstream
-    FONTLOG.txt and README.md beside it.
+    Red Hat Text, copyright 2019 Red Hat, Inc., with Reserved Font Name
+    "Red Hat".
 
-    The files are redistributed unmodified. Six of the family's thirty faces
-    are here, which is what this deck uses; taking a subset is permitted and
-    changes nothing about the terms.
+    Both are licensed under the SIL Open Font License, Version 1.1. The full
+    text of each is in OFL.txt inside its own directory, with Cormorant's
+    upstream FONTLOG.txt and README.md beside it.
+
+    All files are redistributed unmodified. Six faces of each family are here,
+    which is what this deck uses; taking a subset is permitted and changes
+    nothing about the terms.
+
+    Red Hat's Reserved Font Name matters only if you MODIFY the font: an
+    altered copy may not be distributed under the name "Red Hat". Shipping it
+    as it is, which is what happens here, is unrestricted.
 
     The OFL is not CC BY and does not merge into it. It travels with the font
-    files: keep this notice and OFL.txt with them, and do not sell the fonts
-    on their own. Bundling them inside something you sell is allowed; selling
-    them by themselves is not. If you swap Cormorant out, delete this section
-    along with the directory — the obligation goes with the files.
+    files: keep these notices and the OFL.txt files with them, and do not sell
+    the fonts on their own. Bundling them inside something you sell is
+    allowed; selling them by themselves is not. If you swap a face out, delete
+    its paragraph here along with its directory — the obligation goes with the
+    files.
 
 
 4. THE LOGO PLACEHOLDER

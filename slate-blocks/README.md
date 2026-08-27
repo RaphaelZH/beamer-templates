@@ -13,21 +13,29 @@ changes nothing about the colours.
 ./check.sh demo     build demo.tex — every construct, filled
 ```
 
-**XeLaTeX.** The type is Cormorant, by Christian Thalmann, bundled in
-`fonts/Cormorant/` under the SIL Open Font License and loaded by path. Nothing
-to install; nothing that can be silently substituted. This template did build
-under pdfLaTeX until the font arrived — OpenType means `fontspec` and
-`fontspec` means XeLaTeX, and that is the price. `check.sh` already defaults to
-`xelatex`, so nothing about the workflow changes; `ENGINE=pdflatex` now fails
-on the first `\setmainfont`.
+**XeLaTeX.** Two bundled faces with a division of labour, the same arrangement
+`midcentury-olive/` uses:
 
-Six faces are bundled, which is what the deck uses: Medium and Bold, their
-italics, and the two matching small-caps faces. The family has 30 — Light,
-Infant, Unicase, Upright and the rest — and the upstream archive has them.
+| | |
+|---|---|
+| **Red Hat Text** | everything you read a paragraph of — body, bullets, block bodies, tables, the footline |
+| **Cormorant** | everything you read one line of — the title page, frame titles, block labels, the section strip |
 
-**Medium, not Regular.** Cormorant is a display face, drawn for large sizes.
-Regular is too light to hold a projector at body size; Medium is the lightest
-weight that survives the footline.
+Both are under the SIL Open Font License, both are in `fonts/`, both are loaded
+by filename from `Path`. Nothing to install and nothing that can be silently
+substituted.
+
+The split is not decoration. Cormorant is a display face — its own README says
+so — and it is lovely at 21pt and thin at 9pt. Body text and the footline are
+the two places a deck can least afford thin, so they go to Red Hat Text, which
+was drawn for exactly that size. Cormorant Medium rather than Regular even in
+its display role: against a Red Hat body, Regular reads as the quieter of the
+two and the hierarchy inverts.
+
+This template did build under pdfLaTeX until the fonts arrived. OpenType means
+`fontspec` and `fontspec` means XeLaTeX, and that is the price. `check.sh`
+already defaults to `xelatex`, so nothing about the workflow changes;
+`ENGINE=pdflatex` now fails on the first `\setsansfont`.
 
 ## Before you build: the cover, and the logo
 
@@ -152,6 +160,21 @@ seven in `\textsc`, and the frame titles too. Naming `SmallCapsFont` and
 them small caps at all. Check this on any font you swap in: whether a family
 carries `smcp` or ships SC as separate files is not something you can assume.
 
+**A SWOT axis label that loses its second line.** The rotated labels in the
+first column are `\parbox`es, three lines each: the axis name and a `\tiny`
+parenthetical that wraps to two. Change the body font to a wider one and the
+axis name wraps as well, making four lines in a column that holds three — and
+the fourth does not overflow onto the page, it is simply **absent from the
+render**, with nothing in the log naming it. "External origin" is a few points
+longer than "Internal origin", so exactly one of the two labels loses its
+subtitle and the page still looks plausible.
+
+This has now happened twice: 2.4cm was enough for Computer Modern and broke
+under TeX Gyre Heros; 2.5cm broke under Red Hat Text. It is at 2.7cm.
+Measuring the string in a standalone document is not a reliable check — it
+under-reported by enough to look safe at 2.5cm when it was not. **Change the
+font, then look at the SWOT page.**
+
 **A cover photograph that does not cover the page.** The deck is 16:10 and most
 photographs are 16:9. `\includegraphics[width=\paperwidth]` scales the picture
 to the paper's width and leaves it about a tenth of the page short — a white
@@ -205,8 +228,8 @@ sound and the conclusion was wrong: it is not the quadrants, it is the `\tiny`
 parenthetical in the rotated axis label, which overruns the 71.1pt `\parbox`
 it is set in. A number that does not move when you change one thing may still
 be measuring another. It moves when you change the right thing: the same
-warning reads 6.03pt in Computer Modern, 6.30pt in Heros and 7.05pt in
-Cormorant, because it is a piece of text that is too wide for its box.
+warning changes with every change of face, because it is a piece of text that
+is too wide for its box.
 
 It is explained but not fixed, because the obvious fix trades it for a worse
 warning. Widening that `\parbox` to 3.2cm silences the `\hbox` and produces an

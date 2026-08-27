@@ -9,19 +9,40 @@
 % =============================================================================
 
 % -----------------------------------------------------------------------------
-% THE TYPEFACE
+% THE TYPEFACES
 %
-% Cormorant, by Christian Thalmann, bundled in fonts/Cormorant/ under the SIL
-% Open Font License. One family for the whole deck — roman and sans slots both
-% — so nothing can fall back to Computer Modern halfway down a page.
+% Two families with a division of labour, the same arrangement midcentury-olive/
+% uses: a text face carries the running matter, a display face carries the
+% things you read one line of.
 %
-% XELATEX ONLY. This is what the font costs.
+%   Red Hat Text     everything you read a paragraph of — body, bullets, block
+%                    bodies, tables, the footline.
+%   Cormorant        everything you read one line of — the title page, frame
+%                    titles, block labels, the section strip.
 %
-% Cormorant is distributed as OpenType, OpenType means fontspec, and fontspec
-% means XeLaTeX or LuaLaTeX. This template used to build under pdfLaTeX too and
-% no longer does: check.sh already defaults to xelatex, but ENGINE=pdflatex now
-% fails on the first \setmainfont, and the README's "Open in Overleaf" link
-% carries engine=xelatex for the same reason.
+% Both are bundled, both under the SIL Open Font License, both loaded by
+% filename from Path.
+%
+%   fonts/RedHatText/  Red Hat Text, copyright 2019 Red Hat, Inc.
+%                      Reserved Font Name "Red Hat" — so it may be
+%                      redistributed as it is, which is what happens here, but
+%                      a modified copy may not keep the name.
+%   fonts/Cormorant/   Cormorant, copyright 2015 Christian Thalmann.
+%
+% WHY THE SPLIT, RATHER THAN CORMORANT THROUGHOUT
+%
+% Cormorant is a display face — its own README says so, and its designer drew
+% it for large sizes. It is lovely at 21pt and thin at 9pt; a slide's body text
+% and its footline are the two places a deck can least afford thin. Red Hat
+% Text was drawn for the opposite job, at UI sizes, and holds a projector.
+%
+% XELATEX ONLY. This is what the fonts cost.
+%
+% Both are OpenType, OpenType means fontspec, and fontspec means XeLaTeX or
+% LuaLaTeX. This template used to build under pdfLaTeX too and no longer does:
+% check.sh already defaults to xelatex, but ENGINE=pdflatex fails on the first
+% \setsansfont, and the README's "Open in Overleaf" link carries engine=xelatex
+% for the same reason.
 %
 % LOADED BY FILENAME, FROM Path, NOT BY FAMILY NAME.
 %
@@ -32,21 +53,30 @@
 % carries its fonts, and it is why the .otf files are in the repository rather
 % than being a thing you are told to install.
 %
-% MEDIUM, NOT REGULAR. Cormorant is a display face: the designer drew it for
-% large sizes, and at body size Regular is too light to hold a projector.
-% Medium is the lightest weight that survives the footline.
+% CORMORANT MEDIUM, NOT REGULAR. Even used only for display, Regular sits
+% lighter than the Red Hat body beside it and the hierarchy inverts — the
+% heading reads as the quieter of the two. Medium holds its place.
+\usepackage{fontspec}
+
+% The body face goes in the SANS slot and \familydefault follows it, so
+% ordinary text — which is most of a deck — needs no markup to be right.
+\setsansfont{RedHatText-Regular.otf}[
+  Path             = fonts/RedHatText/,
+  BoldFont         = RedHatText-Bold.otf,
+  ItalicFont       = RedHatText-Italic.otf,
+  BoldItalicFont   = RedHatText-BoldItalic.otf,
+]
+\renewcommand{\familydefault}{\sfdefault}
+
+% The display face goes in the ROMAN slot, so \textrm reaches it — which is
+% what \slateTitle and \slateSubTitle already do — and is also given a name of
+% its own, for the \setbeamerfont assignments below.
 %
 % SmallCapsFont IS NOT OPTIONAL. Cormorant ships its small caps as a separate
 % family rather than as an smcp feature inside the roman, so \textsc finds
-% nothing to switch to and renders as ordinary lowercase — silently. That
-% matters here because \newcolouredblock sets every block label in \textsc and
-% the frame titles are small caps too. Naming CormorantSC explicitly is what
-% makes those come out as small caps at all.
-%
-% Six faces are bundled, which is what this deck uses. The full family is 30
-% files — Light, Infant, Unicase, Upright and the rest — and the upstream
-% archive has them if a deck wants one.
-\usepackage{fontspec}
+% nothing to switch to and renders as ordinary lowercase — silently. Every
+% block label goes through \textsc in \newcolouredblock, so getting this wrong
+% costs all seven of them and says nothing.
 \setmainfont{Cormorant-Medium.otf}[
   Path             = fonts/Cormorant/,
   BoldFont         = Cormorant-Bold.otf,
@@ -55,7 +85,7 @@
   SmallCapsFont    = CormorantSC-Medium.otf,
   BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
 ]
-\setsansfont{Cormorant-Medium.otf}[
+\newfontfamily\slateDisplayFont{Cormorant-Medium.otf}[
   Path             = fonts/Cormorant/,
   BoldFont         = Cormorant-Bold.otf,
   ItalicFont       = Cormorant-MediumItalic.otf,
@@ -63,6 +93,19 @@
   SmallCapsFont    = CormorantSC-Medium.otf,
   BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
 ]
+
+% Which beamer elements are display. Written as full \setbeamerfont
+% specifications rather than \addtobeamerfont{}{family=}: the second form
+% inherits a series the new family may not have, and fontspec answers a missing
+% weight by smearing the outline into a fake one rather than by complaining.
+% midcentury-olive/ was bitten by exactly this.
+\setbeamerfont{title}             {size=\LARGE,      series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{subtitle}          {size=\large,      series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{frametitle}        {size=\Large,      series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{framesubtitle}     {size=\normalsize, series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{block title}       {size=\normalsize, series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{section in head/foot}{size=\tiny,     series=\mdseries, family=\slateDisplayFont}
+\setbeamerfont{title in head/foot}  {size=\tiny,     series=\mdseries, family=\slateDisplayFont}
 
 \usepackage{xcolor}
 \usepackage{etoolbox}   % \BeforeBeginEnvironment, used by the block factory
@@ -372,34 +415,45 @@
     \tcbitem[swotheader=swotHelpful] {\color{swotInk}\swotAxisHelpful}
     \tcbitem[swotheader=swotHarmful] {\color{swotInk}\swotAxisHarmful}
 
-    % 2.5cm, not the 2.4cm this used to be. The parbox is rotated, so this
-    % number is the length the label has ALONG the row; the column's own 1cm is
-    % how many stacked lines fit across it.
+    % 2.7cm. THIS NUMBER IS A FUNCTION OF THE BODY FONT — re-check it whenever
+    % the font changes, because nothing else will tell you.
     %
-    % 2.4cm = 68.3pt, and "External origin" in Heros measures 69.8pt. It wrapped
-    % to two lines, which made four lines in a column that holds three, and the
-    % \tiny second line was pushed out of the box — it is simply missing from
-    % the render. "Internal origin" is 66.2pt and fitted, which is why only one
-    % of the two labels broke and why it was easy to miss. Any change of font
-    % has to be re-checked here; 2.5cm = 71.1pt leaves 1.3pt of slack.
+    % The parbox is rotated, so its width is the length the label has ALONG the
+    % row, and the column's own 1cm is how many stacked lines fit across it.
+    % The label is three lines: the axis name, then a \tiny parenthetical that
+    % wraps to two. If the axis name wraps as well that makes four, the fourth
+    % is pushed out of the 1cm column, and it does not overflow into the page —
+    % it is simply ABSENT from the render, with nothing in the log naming it.
+    %
+    % "External origin" is the one that breaks, being a few points longer than
+    % "Internal origin", so exactly one of the two labels loses its second line
+    % and the page still looks plausible. It has now happened twice:
+    %
+    %   Computer Modern   2.4cm was enough
+    %   TeX Gyre Heros    69.8pt against 2.4cm = 68.3pt   → broke
+    %   Red Hat Text      wider still, against 2.5cm      → broke again
+    %
+    % 2.7cm clears Red Hat Text. Measuring the string in a standalone document
+    % is NOT a reliable check — it under-reported by enough to look safe at
+    % 2.5cm when it was not. Build the deck and look at the page.
     %
     % WHILE HERE — the deck's one standing Overfull \hbox is explained, though
     % not fixed. README.md called it a phantom of the raster, on the grounds
     % that narrowing the quadrant boxes never moved it. It is not the
-    % quadrants: it is the \tiny parenthetical in THIS parbox, which measures
-    % 77.5pt against the box's 71.1pt. Widening to 3.2cm does silence it — and
-    % costs an Overfull \vbox of 16.5pt instead, because the parbox width is
-    % the rotated label's height and the grid then no longer fits the frame.
-    % The ceiling is about 2.62cm and the label wants 2.73cm, so the last ~3pt
-    % has to come from shorter axis text, not from this number.
+    % quadrants: it is the \tiny parenthetical in THIS parbox, which is wider
+    % than the box whatever the box is set to within reach. Widening far enough
+    % to silence it (3.2cm) costs an Overfull \vbox of about 16pt instead,
+    % because the parbox width is the rotated label's height and the grid then
+    % no longer fits the frame. The remaining few points have to come from
+    % shorter axis text, not from this number.
     \tcbitem[swotfirstcol=swotInternal]
-      {\rotatebox[origin=c]{90}{\parbox[t]{2.5cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[t]{2.7cm}{\centering
         \color{swotInk}\swotAxisInternal\par}}}
     \tcbitem[swotbox=S] #1
     \tcbitem[swotbox=W] #2
 
     \tcbitem[swotfirstcol=swotExternal]
-      {\rotatebox[origin=c]{90}{\parbox[b]{2.5cm}{\centering
+      {\rotatebox[origin=c]{90}{\parbox[b]{2.7cm}{\centering
         \color{swotInk}\swotAxisExternal\par}}}
     \tcbitem[swotbox=O] #3
     \tcbitem[swotbox=T] #4
