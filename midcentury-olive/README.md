@@ -7,6 +7,27 @@ everything else.
 Licensing is in [LICENSE](LICENSE): three different licences, because the theme,
 the additions and the fonts came from three different places.
 
+**XeLaTeX.** Two bundled faces with a division of labour, the same arrangement
+`slate-blocks/` uses:
+
+| | |
+|---|---|
+| **Montserrat** | everything you read a paragraph of — body, bullets, step cards, tables, the small print |
+| **EB Garamond** | everything you read one line of — the cover, section dividers, frame titles |
+
+Both are under the SIL Open Font License, both are in `fonts/`, both are loaded
+by filename from `Path`. Nothing to install and nothing that can be silently
+substituted. Only the four faces each deck loads are bundled; the details, and
+what to re-check if you swap one, are in [`fonts/README.md`](fonts/README.md).
+
+**The EB Garamond release changed.** This used to carry Duffner's 0.016, which
+had two optical sizes and no bold in any of them; it now carries the
+Duffner/Pardo `EBGaramond12` continuation, one optical size with weights 400 to
+800. Titles are still set at `\mdseries` — that was always the design — but
+`\bfseries` on the display face now resolves to a drawn Bold instead of quietly
+resolving to Regular. If you rebuild an old deck against this directory, the
+titles will not be identical to what you remember.
+
 ## Before you build: the logo
 
 `figures/logo-trim.png` is a **placeholder** — a grey box reading YOUR LOGO
@@ -117,6 +138,15 @@ reading as code.
 And a font that is not installed is silently substituted — an early draft ran in
 Helvetica on a machine without Lato and looked merely "a bit off". Everything is
 bundled under `fonts/` and loaded by path for exactly this reason.
+
+**Small caps in an element you did not put on the display face.** Loading the
+face correctly is only half of it. Beamer resolves `frametitle` through the
+sans family, so a frame title is set in Montserrat — not in Garamond — until
+`\setbeamerfont` says otherwise, and `Letters = SmallCaps` on a family that has
+no `smcp` gives ordinary letters with no warning. Both families here carry
+`smcp` in every bundled face, so this template is safe as it stands;
+`slate-blocks/` lost all seven of its block labels to exactly this and took two
+attempts to diagnose. If you point an element at a new face, check both halves.
 
 **`align=` inside a TikZ node.** It installs its own paragraph settings and
 overrides `\raggedright` and `\hyphenpenalty` set in the node text. Use

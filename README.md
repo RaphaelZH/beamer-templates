@@ -13,7 +13,7 @@ combine two.
 | | | |
 |---|---|---|
 | [`midcentury-olive/`](midcentury-olive/) | XeLaTeX · EB Garamond + Montserrat · olive green | A quiet, typographic 16:9 deck. Small-caps frame titles on a full-bleed band, card rows, section dividers with a subtitle. Built for a 45-page proposal defence. |
-| [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant + Red Hat Text bundled · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
+| [`slate-blocks/`](slate-blocks/) | XeLaTeX · Cormorant + Red Hat Text · slate blue-grey | A 16:10 deck on stock beamer themes, with a photographic cover and seven named blocks in place of beamer's three. Every colour derived from one. |
 
 Both carry the same `\swot` grid, each in its own palette — the same axis
 wording, the same 5pt notes, the same command. They had drifted apart; they
@@ -47,8 +47,9 @@ whatever you do to the style and tells you nothing.
 
 `demo.tex` is the same template with every construct filled to a length that
 would really be used, the prose supplied by `\lipsum`. Build it after editing
-anything in `tdstyle.tex`: uniform filler is what makes an uneven page the
-template's fault rather than the writing's. The screenshots above come from it.
+the style file — `tdstyle.tex` in one, `style.tex` in the other: uniform filler
+is what makes an uneven page the template's fault rather than the writing's.
+The screenshots above come from it.
 
 ```
 ./check.sh          build slides.tex
@@ -75,8 +76,18 @@ one machine is set in Helvetica on another; a path that does not resolve is a
 build error. Loading by fontconfig family name also loses OpenType features —
 `smcp` in particular — with no warning. `midcentury-olive/` carries EB Garamond
 and Montserrat in `fonts/`; `slate-blocks/` carries Cormorant and Red Hat Text.
-Both templates split the work the same way: a text face for what you read a
-paragraph of, a display face for what you read one line of.
+Both split the work the same way: a text face for what you read a paragraph of,
+a display face for what you read one line of, and each ships a full upright /
+italic / bold / bold-italic set so no weight is ever synthesised.
+
+**Bundle only the faces the deck loads, and never the licence-less subset.**
+Both directories are subsets of their upstream releases, which the OFL permits;
+what it does not permit is leaving the licence behind. Each family keeps its
+`OFL.txt`, and the check is done inside the built zip rather than in the source
+tree, because the zip is what people actually receive. The subset itself is
+checked by rendering: every screenshot is rebuilt and compared after the
+directory changes, so a face that turns out to be needed shows up as a page
+that moved.
 
 And check what a family actually carries. Small caps come from the `smcp`
 feature, and a face either has it or does not — EB Garamond and Montserrat have
