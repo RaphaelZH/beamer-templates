@@ -18,26 +18,35 @@ ships 30 files across six styles and five weights; Red Hat ships a Display
 family beside the Text one, plus webfonts and TTFs.
 
 ```
-Cormorant/    Medium  Bold  MediumItalic  BoldItalic        + OFL.txt
-              CormorantSC-Medium  CormorantSC-Bold            FONTLOG.txt
+Cormorant/    Medium  MediumItalic  Bold  BoldItalic        + OFL.txt
+                                                              FONTLOG.txt
 RedHatText/   Regular  Italic  Bold  BoldItalic            + OFL.txt
-              Medium  MediumItalic
 ```
 
 Each family has a full upright / italic / bold / bold-italic set, so nothing
 here is ever synthesised. The rest of Cormorant — Light, Infant, Unicase,
-Upright — is one download away if a deck wants it.
+Upright, and the separately drawn `CormorantSC` — is one download away if a
+deck wants it.
 
 ## The two things that will bite you
 
-**Cormorant's small caps are a separate family, not an `smcp` feature.** So
-`\textsc` finds nothing to switch to and sets ordinary lowercase — no error, no
-warning. `\newcolouredblock` puts all seven block labels through `\textsc`, and
-the frame titles go the same way, so getting this wrong costs the whole deck's
-labels quietly. `SmallCapsFont` and `BoldFeatures = {SmallCapsFont = ...}` in
-the `\setmainfont` call are what make them small caps at all. Check this on any
-face you swap in: whether a family carries `smcp` or ships SC as separate files
-is not something you can assume.
+**Small caps depend on which family the element resolves to, not on what you
+declared.** Cormorant carries `smcp` in its upright faces, so `\textsc` works on
+them unaided — but beamer resolves `frametitle` and `block title` through the
+**sans** family, and until the `\setbeamerfont` block in `style.tex` says
+otherwise those headings are set in whatever the sans slot holds. That is what
+took all seven block labels the first time the fonts were swapped: they were
+still being set in TeX Gyre Heros, which has no `smcp`.
+
+`CormorantSC` was bundled for a while on the theory that `SmallCapsFont` was
+what made those labels work. It was not. Removing both `SmallCapsFont` options
+and deleting the two SC files changed **not one pixel** of any of the five
+screenshots, which is how the claim was retired.
+
+The real gap, read out of the `GSUB` tables rather than guessed: **Cormorant's
+italics carry no `smcp`, and Red Hat Text carries none in any face.** `\textsc`
+in body text, or inside italic display text, will set ordinary letters and say
+nothing about it.
 
 **Cormorant is a display face** — its own README says so. It is drawn for large
 sizes and goes thin at body size, which is why it is not the body font here and

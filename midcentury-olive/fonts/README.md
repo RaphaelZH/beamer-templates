@@ -19,7 +19,6 @@ five weights with matching italics, plus variable and web builds.
 montserrat/       Regular  Italic  SemiBold  SemiBoldItalic       + OFL.txt
 EBGaramond/otf/   Regular  Italic  Bold      BoldItalic           + OFL.txt
                                                                     AUTHORS.txt
-                                                                    CONTRIBUTORS.txt
 ```
 
 Each family has a full upright / italic / bold / bold-italic set, so nothing is
@@ -73,8 +72,15 @@ under any name.
 
 Both families are under the SIL Open Font License 1.1 and are redistributed
 unmodified. Neither declares a Reserved Font Name. The licence text travels
-with the files — `montserrat/OFL.txt` and `EBGaramond/OFL.txt`, the latter with
-the project's `AUTHORS.txt` and `CONTRIBUTORS.txt` — and must keep doing so,
-including inside the zips that `make-overleaf-zips.sh` builds. Taking a subset
-of a family is permitted; dropping its licence is not. See this template's
-`LICENSE` for the whole picture, the cover photograph and the theme included.
+with the files — `montserrat/OFL.txt` and `EBGaramond/OFL.txt` — and must keep
+doing so, including inside the zips that `make-overleaf-zips.sh` builds. Taking
+a subset of a family is permitted; dropping its licence is not.
+
+Nothing else from either upstream is here. The OFL asks for the copyright
+notice and the licence text, and both are inside `OFL.txt`. The one addition is
+EB Garamond's `AUTHORS.txt`: its copyright line credits "The EB Garamond
+Project Authors" rather than naming them, so the file that resolves who they
+are is worth keeping beside it.
+
+See this template's `LICENSE` for the whole picture, the cover photograph and
+the theme included.

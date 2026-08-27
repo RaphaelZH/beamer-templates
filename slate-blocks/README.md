@@ -150,15 +150,30 @@ the pixel. **Run `./check.sh demo` twice after you clone, and twice after any
 change to `\slatetitlepage`.** This is why the committed screenshots look right
 despite the trap: they were taken from an already-settled `.aux`.
 
-**Small caps that are not small caps.** Cormorant ships its small caps as a
-separate family, `CormorantSC`, rather than as an `smcp` feature inside the
-roman. So `\textsc` finds nothing to switch to and sets ordinary lowercase
-instead — no error, no warning, just a page that looks subtly wrong. It would
-have taken every block label with it, because `\newcolouredblock` sets all
-seven in `\textsc`, and the frame titles too. Naming `SmallCapsFont` and
-`BoldFeatures = {SmallCapsFont = ...}` in the `\setmainfont` call is what makes
-them small caps at all. Check this on any font you swap in: whether a family
-carries `smcp` or ships SC as separate files is not something you can assume.
+**Small caps that are not small caps.** Every block label goes through
+`\textsc` in `\newcolouredblock`, and the frame titles are small caps too.
+Both came out as ordinary letters when the fonts were first swapped in — no
+error, no warning, just a page that looks subtly wrong until you compare it
+with the one before.
+
+The cause is not the font. Beamer resolves `frametitle` and `block title`
+through the **sans** family, so those headings were still being set in TeX Gyre
+Heros, which has no `smcp`, while the display face sat unused in the roman
+slot. The `\setbeamerfont` block in `style.tex` is what puts them on Cormorant,
+and that is what fixed it.
+
+This was diagnosed wrongly the first time and the wrong fix was committed:
+`SmallCapsFont = CormorantSC-...` was added to the `\setmainfont` call with a
+comment calling it load-bearing. It was not. Removing both options and deleting
+the two `CormorantSC` files changed **not one pixel** of any of the five
+screenshots — Cormorant carries `smcp` in its upright faces and `\textsc` finds
+it unaided.
+
+What is real, and measured from the `GSUB` tables: **Cormorant's italics carry
+no `smcp`, and Red Hat Text carries none in any face.** So `\textsc` in body
+text, or inside italic display text, will silently set ordinary letters. Check
+this on any face you swap in — and check which family the element you care
+about actually resolves to, which is the part that bit here.
 
 **A SWOT axis label that loses its second line.** The rotated labels in the
 first column are `\parbox`es, three lines each: the axis name and a `\tiny`

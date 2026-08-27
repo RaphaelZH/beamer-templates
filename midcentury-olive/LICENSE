@@ -35,8 +35,10 @@ tdstyle.tex, slides.tex, check.sh, figures/trim.py, README.md
 fonts/EBGaramond/         EB Garamond, copyright 2017 The EB Garamond Project
                           Authors (Georg Duffner, Octavio Pardo); copyright 2025
                           Deborah Khodanovich for the RCS citation glyphs.
-                          SIL Open Font Licence 1.1 — see fonts/EBGaramond/OFL.txt,
-                          with AUTHORS.txt and CONTRIBUTORS.txt beside it.
+                          SIL Open Font Licence 1.1 — see fonts/EBGaramond/OFL.txt.
+                          Its copyright line credits "The EB Garamond Project
+                          Authors" rather than naming them, so AUTHORS.txt is
+                          kept beside it.
 
 fonts/montserrat/         Montserrat, by Julieta Ulanovsky and contributors.
                           SIL Open Font Licence 1.1 — see fonts/montserrat/OFL.txt

@@ -72,26 +72,32 @@
 % what \slateTitle and \slateSubTitle already do — and is also given a name of
 % its own, for the \setbeamerfont assignments below.
 %
-% SmallCapsFont IS NOT OPTIONAL. Cormorant ships its small caps as a separate
-% family rather than as an smcp feature inside the roman, so \textsc finds
-% nothing to switch to and renders as ordinary lowercase — silently. Every
-% block label goes through \textsc in \newcolouredblock, so getting this wrong
-% costs all seven of them and says nothing.
+% SMALL CAPS COME FROM THE FAMILY AN ELEMENT RESOLVES TO, NOT FROM A DECLARATION
+% HERE. Cormorant carries `smcp` in its upright faces, so \textsc works on them
+% with nothing else said — verified by removing every SmallCapsFont option and
+% rebuilding, which changed not one pixel of the blocks page.
+%
+% This block used to name CormorantSC explicitly and claim that without it the
+% block labels lost their small caps. They did lose them once, but not for that
+% reason. Beamer resolves `block title` and `frametitle` through the SANS
+% family, which at the time was still TeX Gyre Heros — and Heros has no `smcp`.
+% What fixed it is the \setbeamerfont block below, which moves those elements
+% onto the display face. See README.md, "small caps that are not small caps".
+%
+% The real gap, measured: Cormorant's ITALICS carry no `smcp`, and Red Hat Text
+% carries none in any face. \textsc in body text, or inside italic display
+% text, will set ordinary letters and say nothing.
 \setmainfont{Cormorant-Medium.otf}[
   Path             = fonts/Cormorant/,
   BoldFont         = Cormorant-Bold.otf,
   ItalicFont       = Cormorant-MediumItalic.otf,
   BoldItalicFont   = Cormorant-BoldItalic.otf,
-  SmallCapsFont    = CormorantSC-Medium.otf,
-  BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
 ]
 \newfontfamily\slateDisplayFont{Cormorant-Medium.otf}[
   Path             = fonts/Cormorant/,
   BoldFont         = Cormorant-Bold.otf,
   ItalicFont       = Cormorant-MediumItalic.otf,
   BoldItalicFont   = Cormorant-BoldItalic.otf,
-  SmallCapsFont    = CormorantSC-Medium.otf,
-  BoldFeatures     = {SmallCapsFont = CormorantSC-Bold.otf},
 ]
 
 % Which beamer elements are display. Written as full \setbeamerfont

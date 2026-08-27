@@ -78,11 +78,17 @@ and Montserrat in `fonts/`; `slate-blocks/` carries Cormorant and Red Hat Text.
 Both templates split the work the same way: a text face for what you read a
 paragraph of, a display face for what you read one line of.
 
-And check what a family actually ships. Cormorant puts its small caps in a
-separate family rather than in an `smcp` feature, so `\textsc` finds nothing to
-switch to and quietly sets ordinary lowercase — which would have taken every
-block label and frame title in `slate-blocks/` with it. `SmallCapsFont` in the
-`\setmainfont` call is what makes them small caps at all.
+And check what a family actually carries. Small caps come from the `smcp`
+feature, and a face either has it or does not — EB Garamond and Montserrat have
+it in every face, Cormorant only in its uprights, Red Hat Text in none. Ask for
+`\textsc` on a face without it and you get ordinary letters and no warning.
+
+Which face you get is the other half. Beamer resolves `frametitle` and `block
+title` through the sans family, so a heading is set in whatever the sans slot
+holds — not in the display face you think you chose — until `\setbeamerfont`
+says otherwise. `slate-blocks/` lost every block label to exactly that, and the
+diagnosis was wrong the first time: the fix was the `\setbeamerfont` block, not
+a `SmallCapsFont` option that turned out to change nothing at all.
 
 **Carry its own licence, and its upstream's.** Most of these start from someone
 else's theme. The obligation travels with the files, so the licence lives in the
