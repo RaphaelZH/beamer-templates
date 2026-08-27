@@ -6,55 +6,75 @@ another, and the template's fallback chain quietly substituted Helvetica
 without reporting anything.
 
 - `montserrat/` — Montserrat. Body text, and everything else that is read.
-- `EBGaramond-0.016/` — Georg Duffner's EB Garamond, **release 0.016**.
-  Titles, cover, section dividers. An old-style serif, chosen for the long
-  fine tail on its Q.
+- `EBGaramond/` — the Duffner/Pardo EB Garamond. Titles, cover, section
+  dividers. An old-style serif, chosen for the long fine tail on its Q.
 
 ## Only the faces this deck loads are here
 
 Both directories are subsets of their upstream releases, which the OFL permits.
-Montserrat ships eighteen weights and both outline formats; EB Garamond 0.016
-ships two optical sizes, a separate small-caps family, three sets of decorated
-initials and a specimen PDF. Together that was 63 files and 19 MB, of which the
-template loaded six. It is now 12 files and 2.1 MB, and every screenshot in
-`screenshots/` is pixel-identical to a build from the full release — which is
-how the subset was checked, rather than by reading the code and hoping.
+Montserrat ships eighteen weights in two outline formats; EB Garamond ships
+five weights with matching italics, plus variable and web builds.
 
 ```
-montserrat/            Regular  Italic  SemiBold  SemiBoldItalic     + OFL.txt
-EBGaramond-0.016/otf/  EBGaramond12-Regular  EBGaramond12-Italic    + COPYING
+montserrat/       Regular  Italic  SemiBold  SemiBoldItalic       + OFL.txt
+EBGaramond/otf/   Regular  Italic  Bold      BoldItalic           + OFL.txt
+                                                                    AUTHORS.txt
+                                                                    CONTRIBUTORS.txt
 ```
 
-`\bfseries` in the body resolves to SemiBold, not to Bold — a deliberate
-setting in `tdstyle.tex`, not an accident of what is bundled. Montserrat Bold
-and the rest of the range are one download away if a deck wants them:
-<https://github.com/JulietaUla/Montserrat>.
+Each family has a full upright / italic / bold / bold-italic set, so nothing is
+ever synthesised. `\bfseries` in the body resolves to Montserrat SemiBold, not
+Bold — a deliberate setting in `tdstyle.tex`, not an accident of what is here.
+
+The subset is checked by rendering, not by reading: every screenshot in
+`screenshots/` is rebuilt and compared after any change to this directory. If a
+face the deck reaches for went missing, one of those nine pages would move.
 
 `.otf` rather than `.ttf` throughout. Both carry the same feature table here,
 but the OTF is the PostScript-outline original and is what the foundry treats
 as canonical.
 
-## The one thing that will bite you
+## Which EB Garamond — this matters more than it looks
 
-**0.016 has no bold at all.** Regular and Italic, and nothing else — no bold,
-no semibold, in any optical size. `tdstyle.tex` therefore maps `BoldFont` onto
-`*-Regular` and sets the title fonts at `\mdseries` explicitly, so nothing ever
-asks for a weight that does not exist and gets a synthesised one. That is a
-position, not a workaround: `\bfseries` on a face with no bold makes fontspec
-smear the outline, which on a Garamond looks like a printing fault, and an
-old-style serif used for display was never bolded anyway.
+There are two free fonts called EB Garamond and they are not the same font.
 
-The Google Fonts and Octavio Pardo releases of EB Garamond are a different
-font: one optical size, weights 400–800, and a real bold. **Swapping one in
-will not fail** — it will quietly change what every title looks like, and the
-`\mdseries` settings will stop making sense. If you replace this directory,
-re-read the DISPLAY FACE section of `tdstyle.tex` before trusting the render.
+- **Duffner/Pardo `EBGaramond12`**, which is what is here. One optical size,
+  weights 400–800, a real Bold and Bold Italic, `smcp` in every face.
+- **Duffner 0.016**, which this used to carry. Two optical sizes (08 for small
+  text, 12 for large), separate small-caps families, decorated initials — and
+  **no bold in any of them**.
+
+Swapping one for the other will not fail. It will quietly change what every
+title looks like and what `\bfseries` resolves to.
+
+### 0.016 looks like it has a bold. It does not.
+
+This is worth writing down because it is convincing. Put 0.016's ten faces in a
+file browser and the previews plainly differ in weight — `EBGaramond08` reads
+much heavier than `EBGaramond12`. Measured, the difference is real: at a
+matched cap height, 08's stem is **41% thicker** than 12's, which is the same
+order as a genuine Medium-to-Bold step (Cormorant Medium→Bold is +40%).
+
+It is still not a weight. It is an optical size — 08 is drawn to be set at 8pt,
+where you need more ink. Two measurements tell them apart:
+
+| | a real weight pair | 0.016's 12 → 08 |
+|---|---|---|
+| set width as it gets heavier | **wider** (+0.9% here, +2.7% Montserrat) | **narrower**, −1.5% |
+| x-height ÷ cap-height | **constant** (Cormorant: 0.6176 both) | **shifts**, 0.631 → 0.616 |
+
+So using 08 as a bold for 12 gives emphasis that is heavier, narrower and
+differently proportioned — it reads as a different font, which is the one thing
+emphasis must never do. Every face in 0.016 is `usWeightClass` 400 with the
+bold bit clear and no variable-weight axis; there is no bold in that release
+under any name.
 
 ## Licences
 
 Both families are under the SIL Open Font License 1.1 and are redistributed
-unmodified. The licence text travels with the files — `montserrat/OFL.txt` and
-`EBGaramond-0.016/COPYING` — and must keep doing so, including inside the zips
-that `make-overleaf-zips.sh` builds. Taking a subset of a family is permitted;
-dropping its licence is not. See this template's `LICENSE` for the whole
-picture, the cover photograph and the theme included.
+unmodified. Neither declares a Reserved Font Name. The licence text travels
+with the files — `montserrat/OFL.txt` and `EBGaramond/OFL.txt`, the latter with
+the project's `AUTHORS.txt` and `CONTRIBUTORS.txt` — and must keep doing so,
+including inside the zips that `make-overleaf-zips.sh` builds. Taking a subset
+of a family is permitted; dropping its licence is not. See this template's
+`LICENSE` for the whole picture, the cover photograph and the theme included.

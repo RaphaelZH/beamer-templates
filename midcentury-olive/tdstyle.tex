@@ -142,30 +142,47 @@
 % large, and Montserrat above keeps the body and the small print, where
 % legibility at distance is what matters.
 %
-% VERSION MATTERS. This is Duffner's EB Garamond 0.016, which ships optical
-% sizes (08 for small text, 12 for large) and NO BOLD — Regular and Italic only.
-% The Google Fonts release is a different animal: one optical size, weights 400
-% to 800. Swapping one for the other silently changes what \bfseries resolves
-% to, so the release is named in the path.
+% VERSION MATTERS, AND THE VERSION CHANGED. This is now the Duffner/Pardo
+% EBGaramond12 continuation — one optical size, weights 400 to 800, with a real
+% Bold and a real Bold Italic. It replaces Duffner's 0.016, which shipped two
+% optical sizes and NO BOLD in any of them.
 %
-% No bold is not a problem to work around, it is the correct setting. An
-% old-style serif used for display was never bolded; \bfseries on a face with no
-% bold makes fontspec synthesise one by smearing the outline, which on Garamond
-% looks like a printing fault. The title fonts below are therefore set at medium
-% weight explicitly, so nothing asks for a bold that does not exist.
+% 0.016 was defensible while it lasted: an old-style serif used for display was
+% never bolded, and \bfseries on a face with no bold makes fontspec synthesise
+% one by smearing the outline, which on a Garamond looks like a printing fault.
+% So the title fonts were pinned to \mdseries and BoldFont was mapped onto
+% *-Regular, and nothing ever asked for a weight that did not exist.
+%
+% They are still pinned to \mdseries below. That is the design — Garamond
+% titles are set at medium weight here — and it is now a choice rather than a
+% constraint. What changed is that \bfseries on this face resolves to a drawn
+% Bold instead of quietly resolving to Regular.
+%
+% A WARNING ABOUT 0.016, IF YOU EVER GO BACK. That release looks like it has a
+% bold and does not. Its 08 optical master is 41% thicker in the stem than its
+% 12 at a matched cap height — the same order as a genuine Medium-to-Bold step —
+% so the two sit side by side in a file listing looking exactly like a weight
+% pair. They are not. Two measurements separate them: a real bold gets WIDER as
+% it gets heavier (this family +0.9%, Montserrat +2.7%) while 08 gets NARROWER
+% than 12 by 1.5%, because it is drawn to be set at 8pt, tight and inky; and a
+% real weight pair holds its x-height-to-cap-height ratio constant, while 0.016
+% shifts it from 0.631 at size 12 to 0.616 at size 08. Using 08 as a bold gives
+% emphasis that is heavier, narrower and differently proportioned — a different
+% font, which is the one thing emphasis must never look like.
 % -----------------------------------------------------------------------------
-\IfFileExists{fonts/EBGaramond-0.016/otf/EBGaramond12-Regular.otf}{}{%
+\IfFileExists{fonts/EBGaramond/otf/EBGaramond-Regular.otf}{}{%
   \PackageError{tdstyle}{%
-    EB Garamond 0.016 not found in fonts/EBGaramond-0.016/otf/.\MessageBreak
+    EB Garamond not found in fonts/EBGaramond/otf/.\MessageBreak
     Get it (SIL OFL) from\MessageBreak
-    https://github.com/octaviopardo/EBGaramond12%
+    https://github.com/octaviopardo/EBGaramond12 —\MessageBreak
+    at least Regular, Italic, Bold, BoldItalic as .otf%
   }{See the DISPLAY FACE section of tdstyle.tex.}%
 }
 
-\newfontfamily\mcmDisplayFont{EBGaramond12}[
-  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
+\newfontfamily\mcmDisplayFont{EBGaramond}[
+  Path = fonts/EBGaramond/otf/, Extension = .otf,
   UprightFont = *-Regular, ItalicFont = *-Italic,
-  BoldFont = *-Regular, BoldItalicFont = *-Italic,
+  BoldFont = *-Bold, BoldItalicFont = *-BoldItalic,
 ]
 
 % Letterspaced full capitals, for the cover and the section dividers — the
@@ -176,9 +193,9 @@
 % a 16:9 slide, and a frame title like "The ontology, the file, and what it was
 % used for · Fatokun et al., 2023" would not fit at all. Frame titles use small
 % capitals instead, which are compact.
-\newfontfamily\mcmDisplayFontLS{EBGaramond12}[
-  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
-  UprightFont = *-Regular, BoldFont = *-Regular,
+\newfontfamily\mcmDisplayFontLS{EBGaramond}[
+  Path = fonts/EBGaramond/otf/, Extension = .otf,
+  UprightFont = *-Regular, BoldFont = *-Bold,
   LetterSpace = 12,
 ]
 \newcommand{\displaycaps}[1]{{\mcmDisplayFontLS\MakeUppercase{#1}}}
@@ -234,9 +251,9 @@
 % The 1.2 of tracking is because small caps set at the letterfit of lowercase
 % read tight; the figure is small enough not to look like a design gesture.
 % -----------------------------------------------------------------------------
-\newfontfamily\mcmTitleFontSC{EBGaramond12}[
-  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
-  UprightFont = *-Regular, BoldFont = *-Regular,
+\newfontfamily\mcmTitleFontSC{EBGaramond}[
+  Path = fonts/EBGaramond/otf/, Extension = .otf,
+  UprightFont = *-Regular, BoldFont = *-Bold,
   Letters = SmallCaps, LetterSpace = 1.2]
 
 % Both branches now resolve to the display face, so a frame title is Garamond
@@ -245,12 +262,14 @@
   {\ifmcmTitleUppercase\mcmTitleFontSC\else\mcmDisplayFont\fi #1}%
 }
 
-% ON. EBGaramond12-Regular.otf reports `smcp`, checked rather than assumed —
-% this release also ships EBGaramondSC12-Regular as a separate small-caps font,
-% but the feature inside the regular face makes that unnecessary.
+% ON. All four bundled faces report `smcp` — checked rather than assumed, and
+% worth re-checking on any face you swap in, because a family that ships its
+% small caps as a SEPARATE font instead of as a feature will make \textsc and
+% Letters=SmallCaps fail silently, setting ordinary lowercase with no warning.
+% slate-blocks/ hit exactly that with Cormorant.
 %
 %   python3 -c "from fontTools.ttLib import TTFont; \
-%     f=TTFont('fonts/EBGaramond-0.016/otf/EBGaramond12-Regular.otf'); \
+%     f=TTFont('fonts/EBGaramond/otf/EBGaramond-Regular.otf'); \
 %     print('smcp' in {r.FeatureTag for r in f['GSUB'].table.FeatureList.FeatureRecord})"
 %
 % \mcmTitleUppercasefalse gives plain title case instead.

@@ -32,20 +32,30 @@ tdstyle.tex, slides.tex, check.sh, figures/trim.py, README.md
 
 3. THE FONTS
 ------------
-fonts/EBGaramond-0.016/   EB Garamond, by Georg Duffner and Octavio Pardo.
-                          SIL Open Font Licence 1.1 — see fonts/EBGaramond-0.016/COPYING
+fonts/EBGaramond/         EB Garamond, copyright 2017 The EB Garamond Project
+                          Authors (Georg Duffner, Octavio Pardo); copyright 2025
+                          Deborah Khodanovich for the RCS citation glyphs.
+                          SIL Open Font Licence 1.1 — see fonts/EBGaramond/OFL.txt,
+                          with AUTHORS.txt and CONTRIBUTORS.txt beside it.
 
 fonts/montserrat/         Montserrat, by Julieta Ulanovsky and contributors.
                           SIL Open Font Licence 1.1 — see fonts/montserrat/OFL.txt
 
     Both are redistributed unmodified, with their own licence files alongside
-    them as the OFL requires. Neither is relicensed by anything above.
+    them as the OFL requires. Neither is relicensed by anything above, and
+    neither declares a Reserved Font Name.
 
-    Note on EB Garamond: this is Duffner's release, which has optical sizes
-    (08, 12) and separate small-caps faces but NO bold. The Google Fonts family
-    of the same name is a different font with weights 400-800. tdstyle.tex loads
-    the faces by filename, not by family name, partly for this reason and partly
-    because the smcp feature is only reliably found that way.
+    Only the faces this deck loads are bundled — four of EB Garamond's ten and
+    four of Montserrat's eighteen. Taking a subset is permitted; dropping a
+    licence with it is not, which is why OFL.txt travels inside each directory
+    and inside the zips that make-overleaf-zips.sh builds.
+
+    Note on which EB Garamond: this is the Duffner/Pardo EBGaramond12
+    continuation — one optical size, weights 400 to 800, a real Bold. It
+    REPLACED Duffner's 0.016, which had two optical sizes and no bold at all.
+    The two are different fonts under one name, so tdstyle.tex loads the faces
+    by filename rather than by family name — that, and because the smcp feature
+    is only reliably found that way.
 
 
 NOT INCLUDED
