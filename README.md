@@ -93,6 +93,18 @@ placeholder; each `README.md` says what to re-measure after you replace it.
 Overleaf compiles these as they are — the fonts are in the repository and are
 loaded by path, so there is nothing to install.
 
+[![Open midcentury-olive in Overleaf](https://img.shields.io/badge/Open%20in%20Overleaf-midcentury--olive-47A141?logo=overleaf&logoColor=white)](https://www.overleaf.com/docs?snip_uri=https://github.com/RaphaelZH/beamer-templates/releases/latest/download/midcentury-olive.zip&engine=xelatex&main_document=slides.tex)
+[![Open slate-blocks in Overleaf](https://img.shields.io/badge/Open%20in%20Overleaf-slate--blocks-47A141?logo=overleaf&logoColor=white)](https://www.overleaf.com/docs?snip_uri=https://github.com/RaphaelZH/beamer-templates/releases/latest/download/slate-blocks.zip&engine=pdflatex&main_document=slides.tex)
+
+Those buttons hand Overleaf a zip of one template, and it unpacks it into a new
+project — engine and main document already set, nothing to configure. Swap
+`main_document=slides.tex` for `demo.tex` in the link to open the filled-in
+version instead.
+
+They point at `releases/latest/download/`, so cutting a new release updates them
+without the README being touched. Build the zips with `./make-overleaf-zips.sh`
+and attach `dist/*.zip` to the release.
+
 **One template per Overleaf project. Do not import this repository whole.**
 Overleaf compiles from the project root, and every template here reaches for its
 own files by relative path — `\input{style}`, `figures/`, `fonts/`, and
@@ -105,12 +117,15 @@ slate-blocks/slides.tex      ! LaTeX Error: File `style.tex' not found.
 midcentury-olive/slides.tex  ! File `beamerthememidcenturymodern.sty' not found.
 ```
 
-So: zip **one template directory** and use *New Project → Upload Project*. Its
-`slides.tex` is then at the project root, every path resolves, and nothing in
-the template has to change. What this costs is the GitHub link — a later
-`git push` will not show up there, and you re-upload.
+The buttons above avoid this by shipping a zip whose root *is* the template
+directory. To do it by hand: zip **one template directory** from inside it and
+use *New Project → Upload Project*.
 
-Then, under *Menu*:
+Either way there is no live link back to GitHub — a later `git push` does not
+show up in the Overleaf project, and you re-upload. Draft a deck there; keep
+changes to the template itself here.
+
+If you upload by hand, set two things under *Menu*:
 
 * **Compiler: XeLaTeX** — required for `midcentury-olive/`. The default is
   pdfLaTeX, which cannot load an OpenType font by filename and will fail on the
