@@ -91,18 +91,32 @@ placeholder; each `README.md` says what to re-measure after you replace it.
 ## Overleaf
 
 Overleaf compiles these as they are — the fonts are in the repository and are
-loaded by path, so there is nothing to install. Two settings, once per project,
-under *Menu*:
+loaded by path, so there is nothing to install.
+
+**One template per Overleaf project. Do not import this repository whole.**
+Overleaf compiles from the project root, and every template here reaches for its
+own files by relative path — `\input{style}`, `figures/`, `fonts/`, and
+`midcentury-olive`'s `.sty`. Set the main document to a file one level down and
+none of those resolve. Compiling from the parent directory locally gives exactly
+what Overleaf gives:
+
+```
+slate-blocks/slides.tex      ! LaTeX Error: File `style.tex' not found.
+midcentury-olive/slides.tex  ! File `beamerthememidcenturymodern.sty' not found.
+```
+
+So: zip **one template directory** and use *New Project → Upload Project*. Its
+`slides.tex` is then at the project root, every path resolves, and nothing in
+the template has to change. What this costs is the GitHub link — a later
+`git push` will not show up there, and you re-upload.
+
+Then, under *Menu*:
 
 * **Compiler: XeLaTeX** — required for `midcentury-olive/`. The default is
   pdfLaTeX, which cannot load an OpenType font by filename and will fail on the
-  first `\setsansfont`. `slate-blocks/` builds under either.
-* **Main document:** `midcentury-olive/slides.tex` or `slate-blocks/slides.tex`,
-  or the `demo.tex` beside it to see the template filled in.
-
-The quickest route in is *New Project → Import from GitHub*, which keeps the
-link so a later `git push` shows up there. Uploading a zip works too and does
-not.
+  first `\setsansfont`. `slate-blocks/` builds under either, so it needs no
+  change.
+* **Main document:** `slides.tex`, or `demo.tex` to see the template filled in.
 
 What you lose on Overleaf is `check.sh`: it reads the log and tells you which
 frame overflowed. Overleaf will still compile a deck whose slides are too full
