@@ -14,7 +14,13 @@
 %     filename rather than by fontconfig family name;
 %   - the section page redrawn to stop it hyphenating a divider title;
 %   - added: \ac, \acb, \code, \aside, \slidelead, stepflow/\stepcard/\steparrow,
-%     \tdsection, \tdstudy, and \parskip.
+%     \tdsection, \tdstudy, and \parskip;
+%   - the TITLE PAGE overridden: upstream's own template (its lines 665-771 at
+%     the version in this directory) copied out and changed in three places --
+%     the logo x and the type-block alignment put on \oliveLogoPos / \oliveTypeAlign,
+%     and the footer rules graded instead of uniform. This is the one block
+%     here that is a fork of upstream code rather than something written on
+%     top of it; see THE COVER, WITH THE LOGO AND THE DATE ON KNOBS below.
 %
 % The .sty itself is untouched, so none of the above is a change to Leguy's
 % file — it is all here.
@@ -632,7 +638,7 @@
 \renewcommand{\mcm@tbuild}{%
   \sbox{\mcmTitleBlockBox}{%
     \begin{minipage}{\mcmTitleBlockWidth}%
-      \centering
+      \olive@typealign
       \hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
       \mcm@tifny{\inserttitle}{%
         {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
@@ -730,3 +736,198 @@
   \end{tcbitemize}
   \end{center}%
 }
+
+% -----------------------------------------------------------------------------
+% THE COVER, WITH THE LOGO AND THE DATE ON KNOBS
+%
+% Two things on the cover had no way to be moved: the logo sat at a hardcoded
+% 1.05cm from the right edge, and the date was \raggedleft inside the title
+% block. Both are now settings:
+%
+%   \renewcommand{\oliveLogoPos}{left}      % left | center | right (default right)
+%   \renewcommand{\oliveTypeAlign}{left}    % left | center | right (default center)
+%
+% \oliveTypeAlign moves the WHOLE type block together - title, subtitle,
+% author, institute AND date. They were separate for about an hour and it was
+% wrong: a centred title over a right-aligned date is not a decision anyone
+% makes on purpose, it is what you get when two defaults were written by two
+% different people. One knob, one edge.
+%
+% The cost of binding them is that the stock combination - title centred, date
+% in the right corner - is no longer reachable. That combination came from
+% upstream using \centering for the block and \raggedleft for the date; the
+% default here is center, so the title stays where it was and the date moves
+% in under it.
+%
+% The scan lines are also graded rather than uniform. Seven identical 0.5pt
+% rules read as one flat texture; weight 0.26-0.68pt and opacity 45-100%,
+% both following the same cosine that already shapes the gap around the logo,
+% give the strip a centre. Nothing moves - only the ink.
+%
+% HOW THIS IS DONE, AND WHAT IT COSTS. This is a \setbeamertemplate override:
+% beamerthememidcenturymodern.sty is NOT edited and stays a verbatim upstream
+% copy. But the body below is upstream's own title page (its lines 665-771)
+% copied out and modified in three places - the two \olive@ hooks and the
+% graded \lw/\op. So this one block is a FORK: upstream can still be replaced
+% wholesale, but if its title page changes, this copy will not follow. Re-diff
+% it against the new upstream when that happens.
+%
+% \makeatletter is not optional. The body calls \mcm@tboxh, \mcm@tfit,
+% \mcm@tifny and \if@mcmhaslogo; in a .tex preamble @ is not a letter, so
+% without it \mcm@tboxh parses as \mcm followed by @tboxh and the cover
+% renders as a line of stray mathematics.
+% -----------------------------------------------------------------------------
+\newcommand{\oliveLogoPos}{right}
+\newcommand{\oliveTypeAlign}{center}
+% How far the type block's aligned edge sits from the paper edge, as a fraction
+% of \paperwidth. 0.09 of 160mm is 14.4mm.
+%
+% NOT TIED TO THE LOGO. The first version of this was 1.05cm + half the logo
+% width, so the type's edge landed on the logo's centre line -- measured, and
+% it did: 1533px against 1534.5px at 300dpi. It was still wrong. That centre
+% line only exists when \oliveLogoPos is right; set it to center or left and
+% the type is aligned to a line that is no longer under anything. A deck with
+% no logo at all collapses it to 1.05cm. And swapping in a wider logo would
+% move the title silently, which is the kind of coupling that makes a template
+% feel haunted.
+%
+% 0.09 rather than upstream's 0.06: at 0.06 a left-aligned title sits 9.6mm
+% from the edge and reads as if it had fallen off. Rather than 0.12 or more,
+% because the title block only gets (1-2e) of the page -- at 0.12 the demo's
+% long title needs three lines where 0.06 takes two, and the cover's job is to
+% be read at a glance.
+\newcommand{\oliveTypeEdge}{0.09\paperwidth}
+
+\makeatletter
+% A length, set by a branch, NOT an expandable macro: \ifdefstring does not
+% expand, so feeding it to \pgfmathsetlengthmacro fails with "Unknown function
+% `\ifdefstring right'" and a cascade of Extra \else.
+\newlength{\olive@logoxlen}
+\newcommand{\olive@setlogox}{%
+  \ifdefstring{\oliveLogoPos}{left}%
+    {\setlength{\olive@logoxlen}{\dimexpr1.05cm+0.5\mcmLogoW\relax}}{%
+  \ifdefstring{\oliveLogoPos}{center}%
+    {\setlength{\olive@logoxlen}{0.5\paperwidth}}{%
+     \setlength{\olive@logoxlen}{\dimexpr\paperwidth-1.05cm-0.5\mcmLogoW\relax}}}}
+\newcommand{\olive@typealign}{%
+  \ifdefstring{\oliveTypeAlign}{left}{\raggedright}{%
+    \ifdefstring{\oliveTypeAlign}{center}{\centering}{\raggedleft}}}
+
+\setbeamertemplate{title page}{%
+  \global\@mcmtitlepagetrue
+  \sbox{\mcmTitleGraphicBox}{\inserttitlegraphic}%
+  \setlength{\mcmLogoW}{\wd\mcmTitleGraphicBox}%
+  \setlength{\mcmLogoH}{\ht\mcmTitleGraphicBox}%
+  \addtolength{\mcmLogoH}{\dp\mcmTitleGraphicBox}%
+  \ifdim\mcmLogoW>0pt \@mcmhaslogotrue\else\@mcmhaslogofalse\fi
+  % Type block edge. Must come after \mcmLogoW is known, and before the date
+  % box and \mcm@tfit are built - both read \mcmTitleBlockWidth.
+  \setlength{\mcmTitleRightMargin}{\oliveTypeEdge}%
+  \setlength{\mcmTitleBlockWidth}{\dimexpr\paperwidth-2\mcmTitleRightMargin\relax}%
+  %
+  % Background and footer strip
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimary]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmBg]
+      (current page.south west)
+      rectangle ([yshift=\mcmFooterHeight]current page.south east);
+    \draw[line width=0.3pt, color=mcmPrimaryDark]
+      ([yshift=\mcmFooterHeight]current page.south west) --
+      ([yshift=\mcmFooterHeight]current page.south east);
+  \end{tikzpicture}%
+  %
+  % Scan lines and logo, centred in the footer strip.
+  % Right segments are always 0.75cm long (ending 0.3cm from the right edge).
+  % The gap width adapts to the logo; the logo is centred within the gap.
+  % Both gap edges use cosine-modulated rounding for an organic shape.
+  \if@mcmhaslogo
+    \begin{tikzpicture}[remember picture, overlay]
+      \olive@setlogox
+      \pgfmathsetlengthmacro{\logocx}{\olive@logoxlen}
+      % Place logo
+      \node[anchor=center] (mcmlogo)
+        at ([xshift=\logocx,
+             yshift=0.5\mcmFooterHeight + \mcmLogoVOffset]current page.south west)
+        {\usebox{\mcmTitleGraphicBox}};
+      % Draw scan lines
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \pgfmathsetmacro{\thet}{(\i - \imid) * 3.14159 / 6}
+        \pgfmathsetmacro{\cf}{abs(cos(\thet r))}
+        \pgfmathsetlengthmacro{\xm}{0.25cm * (0.4 + 0.8 * \cf)}
+        \pgfmathsetmacro{\lw}{0.26 + 0.42*\cf}%
+        \pgfmathsetmacro{\op}{45 + 55*\cf}%
+        % Left segment
+        \pgfmathsetlengthmacro{\leftend}{\logocx - 0.5\mcmLogoW - \xm}
+        \draw[line width=\lw pt, color=mcmScanLine!\op]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=\leftend, yshift=\ysh]current page.south west);
+        % Right segment
+        \pgfmathsetlengthmacro{\rightstart}{\logocx + 0.5\mcmLogoW + \xm}
+        \draw[line width=\lw pt, color=mcmScanLine!\op]
+          ([xshift=\rightstart, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \else
+    \begin{tikzpicture}[remember picture, overlay]
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \pgfmathsetmacro{\thet}{(\i - \imid) * 3.14159 / 6}%
+        \pgfmathsetmacro{\cf}{abs(cos(\thet r))}%
+        \pgfmathsetmacro{\lw}{0.26 + 0.42*\cf}%
+        \pgfmathsetmacro{\op}{45 + 55*\cf}%
+        \draw[line width=\lw pt, color=mcmScanLine!\op]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \fi
+  %
+  % Date: pinned just above the footer strip, at its nominal size (it is
+  % small enough already), and its height is reserved before the main block
+  % is fitted so the two can never collide.
+  \sbox{\mcmTitleDateBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}\olive@typealign
+      \mcm@tifny{\insertdate}{%
+        {\usebeamerfont{date}\fontsize{\the\mcmDateFS}{1.35\mcmDateFS}\selectfont
+         \color{mcmPrimaryFg}\insertdate\par}}%
+    \end{minipage}}%
+  %
+  % Room available to the title block, and the y of its floor.
+  \setlength{\mcmTitleBase}{\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax}%
+  \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+    \addtolength{\mcmTitleBase}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
+                                       +\mcmTitleDateSep\relax}%
+  \fi
+  \setlength{\mcmTitleAvail}{\dimexpr\paperheight-\mcmTitleTopMargin
+                                    -\mcmTitleBase\relax}%
+  \mcm@tfit
+  %
+  % Top edge of the block: centred in the room that is left, but never above
+  % the top margin (which is where it lands if the block is still too tall at
+  % \mcmTitleMinScale).
+  \setlength{\mcmTitleTop}{\dimexpr\mcmTitleBase+0.5\mcmTitleAvail
+                                  +0.5\ht\mcmTitleBlockBox
+                                  +0.5\dp\mcmTitleBlockBox\relax}%
+  \ifdim\mcmTitleTop>\dimexpr\paperheight-\mcmTitleTopMargin\relax
+    \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleTopMargin\relax}%
+  \fi
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north east, inner sep=0pt]
+      at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
+      {\usebox{\mcmTitleBlockBox}};
+    \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+      \node[anchor=south east, inner sep=0pt]
+        at ([xshift=-\mcmTitleRightMargin,
+             yshift=\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax]current page.south east)
+        {\usebox{\mcmTitleDateBox}};
+    \fi
+  \end{tikzpicture}%
+}
+\makeatother

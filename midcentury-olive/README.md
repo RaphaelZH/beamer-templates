@@ -35,17 +35,64 @@ HERE. No institution's logo ships with this template: a mark is its owner's
 trademark, a licence on the files around it does not extend to it, and a public
 repository is not the place to redistribute one.
 
-Drop your own in, then re-measure two things in `slides.tex`, both of which were
-fitted to a particular logo and will be wrong for yours:
+Drop your own in, then re-measure one thing in `slides.tex`:
 
-* `\titlegraphic{...height=1.5cm}` — the height;
-* `\date{\makebox[2.413cm][l]{...}}` — the width that aligns the date's left
-  edge to a feature of the logo above it. This is a fixed-width box rather than
-  a nudge, because the date is set flush right: padding it would put its *left*
-  edge wherever the string happened to end.
+* `\titlegraphic{...height=1.5cm}` — the height, which was fitted to a
+  particular logo and will be wrong for yours.
+
+The date used to need measuring too — `\date{\makebox[2.413cm][l]{...}}`, a
+fixed-width box that lined the date's left edge up with the logo above it. That
+is gone, and good riddance: its unused 6mm counted as text, so the moment the
+type block was centred the date sat 1.7% of the page left of everything above
+it. Write `\date{\MakeUppercase{\today}}` and let `\oliveTypeEdge` below place
+it.
 
 The placeholder is deliberately ugly. It builds, so a fresh clone works, and it
 is impossible to leave in by accident.
+
+## The cover has three settings
+
+Put these in the preamble, after `\oliveTheme`. All three are optional; the
+defaults are what `demo.tex` builds.
+
+| | values | default | what it moves |
+|---|---|---|---|
+| `\oliveTypeAlign` | `left` `center` `right` | `center` | the whole type block — title, subtitle, author, institute **and date** |
+| `\oliveLogoPos` | `left` `center` `right` | `right` | the logo in the footer strip, and with it the gap the rules open around it |
+| `\oliveTypeEdge` | any length | `0.09\paperwidth` | how far the type block's aligned edge sits from the paper edge |
+
+```latex
+\renewcommand{\oliveTypeAlign}{left}
+\renewcommand{\oliveLogoPos}{center}
+\renewcommand{\oliveTypeEdge}{0.06\paperwidth}
+```
+
+**The date follows the title.** They were separate settings for about an hour
+and it was wrong: a centred title over a right-aligned date is not a decision
+anyone makes, it is what you get when two defaults were written by two different
+people. The cost is that upstream's combination — title centred, date in the
+corner — is no longer reachable.
+
+**`\oliveTypeEdge` is not tied to the logo**, and the first version was. It read
+`1.05cm + 0.5\mcmLogoW`, which put the type's edge exactly on the logo's centre
+line — measured at 300dpi, 1533px against 1534.5px. It was still wrong: that
+centre line only exists when `\oliveLogoPos` is `right`, a deck with no logo
+collapses it to 1.05cm, and a wider logo would move the title silently.
+
+**Useful range: 0.06 to 0.12.** The block gets `(1 - 2e)` of the page, so the
+edge and the title's length pull against each other. At `0.06` — upstream's own
+value — a left-aligned title sits 9.6mm from the paper edge and reads as if it
+had fallen off; at `0.12` the demo's long title needs three lines where `0.06`
+takes two.
+
+**Outside that range nothing will warn you.** Built at 0.02, 0.06, 0.12, 0.20
+and 0.30, every one reports zero errors and zero overfull boxes — because
+upstream's title fitter shrinks the title until it fits, down to
+`\mcmTitleMinScale` (55%). Measured, the first title line went from 21px of cap
+height at 0.02 to 14px at 0.30. This is the one place in this template where
+something is silently scaled to fit instead of being reported, it is upstream's
+mechanism rather than this file's, and `check.sh` cannot see it. If a cover
+looks small, suspect the edge before the font.
 
 ## Attribution — required, not optional
 
@@ -209,6 +256,7 @@ set a point smaller instead. Same cause, same page, two different levers.
 
 | | |
 |---|---|
+| `\oliveTypeAlign` / `\oliveLogoPos` / `\oliveTypeEdge` | the three cover settings — see **The cover has three settings** above |
 | `\oliveTheme` | the palette. Type `oliveGreen` (accent), `oliveInk` (text), `olivePaper` (ground), `oliveRust` (alert), `oliveTeal` (example) |
 | `\ac{...}` | a term, in accent colour |
 | `\acb{...}` | a named thing — a standard, a tool, a study — accent and bold |
