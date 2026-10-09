@@ -1,0 +1,68 @@
+% =============================================================================
+% slides.tex — the skeleton. Copy this file, keep everything else.
+%
+%   ./check.sh          build it and report overflows
+%   ./check.sh demo     build demo.tex instead, which fills every construct
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+
+\input{style}
+
+% ---- the title page --------------------------------------------------------
+\renewcommand{\morandiTitle}    {The title of the talk}
+\renewcommand{\morandiSubTitle} {What kind of talk it is}
+\renewcommand{\morandiAuthor}   {Given Family}
+\renewcommand{\morandiAffiliate}{Your institution, City, Country}
+% \morandiDate defaults to \today
+
+% ---- what the footline says ------------------------------------------------
+\title[Short title]{The title of the talk}
+\author[Given Family]{Given Family}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \morandititlepage
+\end{frame}
+
+% \morandicontents prints a contents page with the current section picked out.
+% Call it where a long talk needs one; do not put one before every section.
+\morandicontents
+
+\section{A first section}
+
+\begin{frame}{A page of prose}
+  \textbf{The lead states the point} and the sentences after it carry it.
+  Nothing else on the page competes with it.
+
+  \medskip
+  A second paragraph, to show where a line wraps and how the rag is limited:
+  a line may end up to 9mm early and no further, which keeps the right edge
+  from looking torn.
+\end{frame}
+
+\begin{frame}{Points and a block}
+  \begin{itemize}
+    \item The first point, stated in a sentence.
+    \item The second, longer, to show where a bullet wraps and how the second
+          line sits under the first.
+  \end{itemize}
+
+  \medskip
+  \begin{block}{A named block}
+    The block label is set in the display face on the one mid tone in this
+    palette that can carry white type.
+  \end{block}
+\end{frame}
+
+\section{A second section}
+
+\begin{frame}[fragile]{The last page}
+  A section divider was printed before this page without any markup here —
+  \verb|\AtBeginSection| does it.
+\end{frame}
+
+\end{document}
