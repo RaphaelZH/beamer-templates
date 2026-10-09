@@ -19,6 +19,13 @@
 
 \input{style}
 
+% Language. Must come after the template, which is what loads the fonts.
+% The LAST option is the main one, so uncomment the second line for a deck that
+% is mainly English with French in it, and reverse the two for a French one.
+% The bilingual line needs babel-french, which a minimal TeX Live lacks.
+\usepackage[english]{babel}
+%\usepackage[french,english]{babel}
+
 % The watermark: the cover photograph on every slide at 6.7%. Comment out to
 % drop it.
 \slateWatermark{figures/background.png}
