@@ -1,64 +1,100 @@
 # midcentury-olive
 
-Extracted from *From Thing Descriptions to a Safety Ontology* (August 2026)
-after that deck was finished. Copy this directory, replace `slides.tex`, keep
-everything else.
+A 16:9 beamer theme in one olive green, with small-caps frame titles on a
+full-bleed band, card rows for a process, section dividers that take a
+subtitle, and a SWOT grid whose quadrant colours are mixed from its two axes.
+Built on Jules Leguy's *midcentury modern*.
 
-Licensing is in [LICENSE](LICENSE): three different licences, because the theme,
-the additions and the fonts came from three different places.
+![The title page](screenshots/title.png)
 
-**XeLaTeX.** Two bundled faces with a division of labour, the same arrangement
-`slate-blocks/` uses:
+**XeLaTeX only**, despite what the `.sty` header says — that line is upstream's
+and this directory retargets it. The fonts are OpenType and loaded by path,
+which means `fontspec`.
+
+## Quick start
+
+Copy this directory, then:
+
+```
+./check.sh          build slides.tex, report any frame that overflows
+./check.sh demo     build demo.tex — every construct, filled out
+./check.sh --clean  remove build artefacts
+```
+
+Write your deck in `slides.tex`. The preamble loads the theme, then the
+additions:
+
+```latex
+\usepackage{beamerthememidcenturymodern}
+\input{tdstyle}
+\oliveTheme
+```
+
+Run the build **twice**. Section and study dividers are drawn with
+`remember picture, overlay`, whose coordinates come from the previous pass's
+`.aux`; one pass leaves them blank. `check.sh` does this for you.
+
+Also on the Overleaf gallery. The "Open in Overleaf" button in the
+[repository README](../README.md) opens the current release as a new project.
+
+## What it gives you
 
 | | |
 |---|---|
-| **Montserrat** | everything you read a paragraph of — body, bullets, step cards, tables, the small print |
-| **EB Garamond** | everything you read one line of — the cover, section dividers, frame titles |
+| `\ac{...}` | a term, in the accent colour |
+| `\acb{...}` | a named thing — a standard, a tool, a study — accent and bold |
+| `\code{...}` | a literal. Follows the ambient size, always upright |
+| `\aside{...}` | a note at the foot of a frame, above a hairline rule |
+| `\slidelead{...}` | a frame's opening line, under the title band |
+| `stepflow` / `\stepcard` / `\steparrow` | a card row. `\stepcard[w]` takes a width multiplier; the multipliers in a row should sum to the card count |
+| `\tdsection{title}{subtitle}` | a section divider |
+| `\tdstudy{label}{title}{body}` | a divider *inside* a section — thin spine, no page-wide fill |
+| `\swot{S}{W}{O}{T}` | a 3×3 SWOT grid |
 
-Both are under the SIL Open Font License, both are in `fonts/`, both are loaded
-by filename from `Path`. Nothing to install and nothing that can be silently
-substituted. Only the four faces each deck loads are bundled; the details, and
-what to re-check if you swap one, are in [`fonts/README.md`](fonts/README.md).
+![Card rows and dividers](screenshots/cards.png)
 
-**The EB Garamond release changed.** This used to carry Duffner's 0.016, which
-had two optical sizes and no bold in any of them; it now carries the
-Duffner/Pardo `EBGaramond12` continuation, one optical size with weights 400 to
-800. Titles are still set at `\mdseries` — that was always the design — but
-`\bfseries` on the display face now resolves to a drawn Bold instead of quietly
-resolving to Regular. If you rebuild an old deck against this directory, the
-titles will not be identical to what you remember.
+`\tdsection` **takes the title and the subtitle at once.** `\AtBeginSection`
+typesets the divider the moment `\section` runs, so a subtitle set on the line
+after arrives too late and is dropped.
 
-## Before you build: the logo
+![The SWOT grid](screenshots/swot.png)
 
-`figures/logo-trim.png` is a **placeholder** — a grey box reading YOUR LOGO
-HERE. No institution's logo ships with this template: a mark is its owner's
-trademark, a licence on the files around it does not extend to it, and a public
-repository is not the place to redistribute one.
+`\swot` needs `\usepackage{tcolorbox}` and `\tcbuselibrary{skins, raster}` in
+the preamble. Its quadrant colours are mixed from the two axes rather than
+picked, so a reader can place a quadrant without reading its label. Keep each
+quadrant to about four lines.
 
-Drop your own in, then re-measure one thing in `slides.tex`:
+## The palette
 
-* `\titlegraphic{...height=1.5cm}` — the height, which was fitted to a
-  particular logo and will be wrong for yours.
+`\oliveTheme` sets it. In your slide source you need only these names:
 
-The date used to need measuring too — `\date{\makebox[2.413cm][l]{...}}`, a
-fixed-width box that lined the date's left edge up with the logo above it. That
-is gone, and good riddance: its unused 6mm counted as text, so the moment the
-type block was centred the date sat 1.7% of the page left of everything above
-it. Write `\date{\MakeUppercase{\today}}` and let `\oliveTypeEdge` below place
-it.
+| | |
+|---|---|
+| `oliveGreen` | the accent |
+| `oliveInk` | body text |
+| `olivePaper` | the page ground |
+| `oliveRust` | alert |
+| `oliveTeal` | example |
 
-The placeholder is deliberately ugly. It builds, so a fresh clone works, and it
-is impossible to leave in by accident.
+The `mcm*` names you will see in the `.sty` — `mcmPrimary`, `mcmBg` and the
+rest — are upstream's, and the `olive*` names are aliases onto them rather
+than renames. Keeping them as aliases is what allows a new upstream release to
+be dropped in unchanged.
 
-## The cover has three settings
+## The cover
 
-Put these in the preamble, after `\oliveTheme`. All three are optional; the
-defaults are what `demo.tex` builds.
+`figures/logo-trim.png` is a placeholder, a grey box reading YOUR LOGO HERE.
+No institution's mark ships here: a logo is its owner's trademark and the
+licence on these files does not extend to it. Drop yours in and re-measure one
+thing — `\titlegraphic{...height=1.5cm}` in `slides.tex`, fitted to a
+particular logo.
+
+Three settings, all optional, in the preamble after `\oliveTheme`:
 
 | | values | default | what it moves |
 |---|---|---|---|
 | `\oliveTypeAlign` | `left` `center` `right` | `center` | the whole type block — title, subtitle, author, institute **and date** |
-| `\oliveLogoPos` | `left` `center` `right` | `right` | the logo in the footer strip, and with it the gap the rules open around it |
+| `\oliveLogoPos` | `left` `center` `right` | `right` | the logo in the footer strip, and the gap the rules open around it |
 | `\oliveTypeEdge` | any length | `0.09\paperwidth` | how far the type block's aligned edge sits from the paper edge |
 
 ```latex
@@ -67,237 +103,161 @@ defaults are what `demo.tex` builds.
 \renewcommand{\oliveTypeEdge}{0.06\paperwidth}
 ```
 
-**The date follows the title.** They were separate settings for about an hour
-and it was wrong: a centred title over a right-aligned date is not a decision
-anyone makes, it is what you get when two defaults were written by two different
-people. The cost is that upstream's combination — title centred, date in the
-corner — is no longer reachable.
+The date follows the title; there is no setting that separates them.
 
-**`\oliveTypeEdge` is not tied to the logo**, and the first version was. It read
-`1.05cm + 0.5\mcmLogoW`, which put the type's edge exactly on the logo's centre
-line — measured at 300dpi, 1533px against 1534.5px. It was still wrong: that
-centre line only exists when `\oliveLogoPos` is `right`, a deck with no logo
-collapses it to 1.05cm, and a wider logo would move the title silently.
+**Keep `\oliveTypeEdge` between 0.06 and 0.12.** The type block gets `(1 - 2e)`
+of the page, so the edge and the title's length pull against each other: at
+`0.06` a left-aligned title sits 9.6mm from the paper edge, and past `0.12` a
+long title starts taking an extra line.
 
-**Useful range: 0.06 to 0.12.** The block gets `(1 - 2e)` of the page, so the
-edge and the title's length pull against each other. At `0.06` — upstream's own
-value — a left-aligned title sits 9.6mm from the paper edge and reads as if it
-had fallen off; at `0.12` the demo's long title needs three lines where `0.06`
-takes two.
+**Nothing warns you outside that range.** Upstream's title fitter shrinks the
+title until it fits, down to 55% of its nominal size, and reports neither an
+error nor an overfull box — `check.sh` cannot see it either. If a cover looks
+small, suspect the edge before the font.
 
-**Outside that range nothing will warn you.** Built at 0.02, 0.06, 0.12, 0.20
-and 0.30, every one reports zero errors and zero overfull boxes — because
-upstream's title fitter shrinks the title until it fits, down to
-`\mcmTitleMinScale` (55%). Measured, the first title line went from 21px of cap
-height at 0.02 to 14px at 0.30. This is the one place in this template where
-something is silently scaled to fit instead of being reported, it is upstream's
-mechanism rather than this file's, and `check.sh` cannot see it. If a cover
-looks small, suspect the edge before the font.
+Write the date plainly, `\date{\MakeUppercase{\today}}`; `\oliveTypeEdge`
+places it.
+
+## Fonts
+
+Both are bundled in `fonts/`, under the SIL Open Font Licence, and loaded by
+filename from `Path` — never by family name, which fontconfig substitutes
+silently when it cannot resolve it. Only the four faces each deck loads are
+bundled; see [`fonts/README.md`](fonts/README.md).
+
+| | |
+|---|---|
+| **Montserrat** | everything you read a paragraph of — body, bullets, step cards, tables, the small print |
+| **EB Garamond** | everything you read one line of — the cover, section dividers, frame titles |
+
+Both carry `smcp` in all four bundled faces, accented letters included, so
+small caps are safe anywhere in this template as it stands. **If you swap a
+face, check two things:** that the new one has `smcp`, and which family the
+element you care about resolves to. Beamer takes `frametitle` through the
+**sans** family, so a display face in the roman slot never reaches it until
+`\setbeamerfont` says otherwise, and `Letters = SmallCaps` on a face without
+`smcp` gives ordinary letters with no warning.
+
+The EB Garamond here is the Duffner/Pardo `EBGaramond12` continuation — one
+optical size, weights 400 to 800, a real Bold. It replaced Duffner's 0.016,
+which had two optical sizes and no bold at all. A deck rebuilt against this
+directory will not have identical titles to one built before the swap.
+
+## Language
+
+The language belongs to the deck, not to `tdstyle.tex`, and `babel` must come
+**after** the theme — the theme is what loads fontspec and picks the faces.
+
+```latex
+\oliveTheme
+
+% The LAST option is the main language.
+\usepackage[english]{babel}
+%\usepackage[french,english]{babel}   % mainly English, some French
+%\usepackage[english,french]{babel}   % mainly French
+```
+
+`slides.tex` and `demo.tex` ship the first line active. The bilingual lines
+need `babel-french`, which Overleaf and a full TeX Live have and a minimal
+install does not — there they stop the build at `Unknown option 'french'`.
+`babel` and `polyglossia` cannot both be loaded.
+
+Both bundled faces cover the Latin-1 accents, `œ`/`Œ`, `Ÿ` and the guillemets,
+and their small caps reach the accented letters. A language package does not
+touch the fonts: `fontspec` chooses faces by path, `babel` chooses hyphenation
+and spacing.
+
+French inserts a thin space before `:` `;` `!` `?` inside `\texttt` and
+`lstlisting` as well, which is wrong in a URL, a path or a query string. Check
+any verbatim material containing a colon.
 
 ## Attribution — required, not optional
 
 The theme underneath is **midcentury modern** by **Jules Leguy**
 (<https://github.com/jules-leguy/midcenturymodern>), used under **CC BY 4.0**.
 
-That licence is not a courtesy. Distributing a modified version obliges you to
-name the creator, give the source and the licence, and **indicate that changes
-were made**. All four are in the header of `beamerthememidcenturymodern.sty` and
-at the top of `tdstyle.tex`, where the changes are listed.
-
-Two consequences worth being clear about:
-
-* **Renaming the file would not remove the obligation — it would sharpen it.**
-  The more the origin is obscured, the more the attribution has to be explicit.
-* Keep it in the source files, not only here. A `.sty` gets copied into a new
-  project on its own; a README does not travel with it.
+That licence obliges you to name the creator, give the source and the licence,
+and **indicate that changes were made**. All four are in the header of
+`beamerthememidcenturymodern.sty` and at the top of `tdstyle.tex`, where the
+changes are listed. Keep them in the source files, not only here: a `.sty` gets
+copied into a new project on its own, a README does not travel with it.
 
 `beamerthememidcenturymodern.sty` is upstream verbatim apart from six comment
-lines in its header. Every addition lives in `tdstyle.tex`, so the theme can be
-re-downloaded and dropped in without losing anything.
+lines in its header, so a new upstream release can be dropped in. The one
+exception is the title page: `tdstyle.tex` overrides it with a modified copy of
+upstream's own, which means that block will not follow upstream and should be
+re-diffed when it changes.
 
-## Why the file is still called that
+## Troubleshooting
 
-`mcm` — the prefix on `mcmPrimary`, `mcmBg`, `mcmBlack` and the rest — stands
-for *mid-century modern*, the name of the theme this is built on. It is someone
-else's word and it means nothing here, so **nothing in your slide source needs
-to type it**: `tdstyle.tex` defines `oliveGreen`, `oliveInk` and `olivePaper`, and
-the skeleton uses only those.
+**Dividers are blank.** One pass. Build twice; `check.sh` does.
 
-They are aliases, not renames, and deliberately so. The `.sty` refers to `mcm*`
-throughout; renaming inside it would mean giving up the ability to drop in a new
-upstream release, in exchange for tidying a prefix that then appears in nothing
-but a file nobody edits. If you ever do decide to fork it properly, rename the
-file *and* keep the attribution — see above.
+**`Illegal parameter number in definition of \beamer@doifinframe`**, or
+`already defined` on the second pass. A `\newcommand` that takes an argument,
+defined inside a frame — beamer reads a frame body more than once. Every
+command with an argument goes in the preamble.
+
+**A table runs off the page.** An `l` column cannot break a line. Use `p{}`,
+prefixed with `>{\raggedright\arraybackslash}` unless you want justification.
+
+**The title lost its line break.** A second `\title` silently overwrites the
+first, `\\` included. Declare it once.
+
+**Text is leaded at the wrong size.** LaTeX sets a paragraph with the
+`\baselineskip` in force when the paragraph *ends*. Write `{\scriptsize #1\par}`,
+not `{\scriptsize #1}\par`.
+
+**A TikZ node ignores `\raggedright` or `\hyphenpenalty`.** `align=` installs
+its own paragraph settings. Use `align=flush left`, and `\hyphenchar\font=-1`
+to stop hyphenation — a font property, which `align=` cannot override.
+
+**A listing in a `columns[T]` sits lower than the prose beside it.** `[T]`
+aligns on the top of each column's first box and the listing's `aboveskip`
+pushes it down. Zero the skip, then measure. Open each column with
+`\vspace{0pt}`; `\strut\vspace{-\baselineskip}` prints line one on top of line
+two.
+
+**`\aside` sits against the last line of prose.** On a full page its `\vfill`
+has nothing to push with. It carries a collapsible floor by design; a rigid one
+puts already-fitting frames over the edge.
+
+**A frame overflows.** `./check.sh` names it. Find what actually sets the
+page's height — the tallest card in a row, the taller of two columns, a wrapped
+row label — and cut there. Do not reach for `[shrink]`.
+
+### Log warnings that are not faults
+
+`check.sh` counts and suppresses one constant: `Overfull \hbox (21.33955pt too
+wide)`, once per titled frame. The frame title is a full-bleed band, a
+`beamercolorbox` of `wd=\paperwidth` set in a context whose measure is
+`\textwidth`; it is meant to run to both paper edges. **Any other `\hbox`
+warning is real.**
+
+Template-drawn `[plain]` pages — the title page, the dividers — also report
+small `Overfull \vbox` values that respond to nothing. They are the templates
+measuring an absolutely-positioned overlay that contributes no height. Rendered
+and checked: nothing is clipped. Do not chase them.
+
+## Files
 
 ```
-./check.sh          build twice, report only real overflows
-./check.sh --clean  remove build artefacts
+beamerthememidcenturymodern.sty   upstream, verbatim
+tdstyle.tex                       everything this directory adds
+slides.tex                        your deck
+demo.tex                          every construct, filled out
+check.sh                          build twice, report overflows
+fonts/                            Montserrat, EB Garamond, and their licences
+figures/                          a placeholder logo, and trim.py
 ```
-
----
-
-## Build it twice. Always.
-
-`./check.sh` does. A single `xelatex` run leaves the section dividers and study
-dividers **blank** — they are drawn with `remember picture, overlay`, whose
-coordinates come from the previous pass's `.aux`. This bit us: three pages
-rendered as bare text with no background, and the cause was a one-pass build
-left over from a measurement loop.
-
-XeLaTeX, not LuaLaTeX. LuaLaTeX is unusable in the container we build in
-(`module 'luaotfload-main' not found`; `texlive-luatex` is absent).
-
----
-
-## These stop the build
-
-**`\newcommand` with an argument, inside a frame.** Beamer reads a frame body
-more than once. You get `Illegal parameter number in definition of
-\beamer@doifinframe`, or `already defined` on the second pass. Cost us two
-builds, once for a table column prefix and once for a bulleted-note command.
-**Every command with an argument goes in the preamble.**
-
-**`l` columns in a `tabular` with cells that need to wrap.** `l` cannot break a
-line; one table ran 212pt — over 7cm — past the right margin. Use `p{}`, and
-prefix with `>{\raggedright\arraybackslash}` unless you want justification.
-
----
-
-## These render wrong and say nothing
-
-**A second `\title`.** It silently overwrites the first, including any `\\` in
-it. Declare it once.
-
-**`\par` written outside a size group.** LaTeX sets a whole paragraph with the
-`\baselineskip` in force when the paragraph *ends*. `{\scriptsize #1}\par`
-therefore leads the text at the outer size — in `\stepcard` this made the card
-bodies 40% too open, and only on the lines the size change was meant to cover.
-Write `{\scriptsize #1\par}`.
-
-**A hardcoded size inside a semantic command.** `\code` used to carry
-`\footnotesize`. Inside a figure set at 6.6pt every literal became the largest
-thing on the line. It now scales from the ambient size (`\tdCodeScale`) and
-forces `\upshape`, because monospace slanted by a surrounding `\itshape` stops
-reading as code.
-
-**Fonts loaded by family name.** `smcp` is present only when the face is loaded
-**by filename**; by fontconfig family name the feature silently does not apply.
-And a font that is not installed is silently substituted — an early draft ran in
-Helvetica on a machine without Lato and looked merely "a bit off". Everything is
-bundled under `fonts/` and loaded by path for exactly this reason.
-
-**Small caps in an element you did not put on the display face.** Loading the
-face correctly is only half of it. Beamer resolves `frametitle` through the
-sans family, so a frame title is set in Montserrat — not in Garamond — until
-`\setbeamerfont` says otherwise, and `Letters = SmallCaps` on a family that has
-no `smcp` gives ordinary letters with no warning. Both families here carry
-`smcp` in every bundled face, so this template is safe as it stands;
-`slate-blocks/` lost all seven of its block labels to exactly this and took two
-attempts to diagnose. If you point an element at a new face, check both halves.
-
-**`align=` inside a TikZ node.** It installs its own paragraph settings and
-overrides `\raggedright` and `\hyphenpenalty` set in the node text. Use
-`align=flush left` for ragged right, and `\hyphenchar\font=-1` — a font
-property, which `align=` cannot override — to stop hyphenation.
-
-**`columns[T]` with a listing in one column.** `[T]` aligns on the top of each
-column's first box, so the listing's `aboveskip` pushes the code down. Zero it
-and then *measure*: at `\scriptsize` against `\small` prose, about 5pt puts the
-two first lines level. Open each column with `\vspace{0pt}` — that is the `[T]`
-reference. `\strut\vspace{-\baselineskip}` is **not**: it prints line one on top
-of line two.
-
-**`\aside` on a full page.** Its `\vfill` has nothing left to push with, so the
-rule lands against the last line of prose. It carries a `0.9em minus 0.85em`
-floor: a gap when there is room, collapsible when there is not. A *rigid* floor
-put two already-fitting frames back over the edge.
-
----
-
-## Noise in the log, verified and filtered
-
-**`Overfull \hbox (21.33955pt too wide)`, once per titled frame.** The frame
-title is a full-bleed colour band — a `beamercolorbox` of `wd=\paperwidth` set
-in a context whose measure is `\textwidth`. It is meant to run to both paper
-edges. An untitled frame does not report it, which is how it was pinned down.
-`check.sh` counts these and suppresses them; any *other* `\hbox` warning is real.
-
-**Small constant `Overfull \vbox` on template-drawn `[plain]` pages.** The title
-page and the section dividers report values like `7.1597pt` and `3.77133pt` that
-respond to nothing — not to the section title's length, not to the logo height,
-not to deleting the frame before them. Both pages were rendered at 130dpi and
-read: nothing is clipped. They are the templates measuring their own
-absolutely-positioned overlay, which contributes no height to the page. **Do not
-chase these.** Roughly an hour went into one of them before that was established.
-
-**The SWOT page's `Overfull \hbox` is gone, and it was not a phantom.** This
-section used to file the `12.3812pt` here — and the `6.03252pt` in
-`slate-blocks/` — beside the two above, on the evidence that it did not move
-when the quadrant boxes were narrowed (5, 6, 7 and 8 mm of inset), when
-`raster width` was set explicitly, or when the raster's skips were zeroed. All
-of that was true, and the conclusion drawn from it was wrong.
-
-It was the rotated axis label in the first column, too wide for the `\parbox`
-it is set in — which is neither the quadrants nor the raster, so of course
-none of those tests moved it. **A number that does not move when you change one
-thing may still be measuring another.** The `\parbox` went from 2.4cm to 2.7cm
-and the log is clean.
-
-The fix is not the same in both templates, which is worth knowing before
-copying one into the other. Here, widening the box is enough. In
-`slate-blocks/` it is not: that deck is 16:10 with less vertical room, the
-rotated `\parbox`'s width is the label's height, and widening it far enough
-produces an `Overfull \vbox` before it silences the `\hbox`. There the note is
-set a point smaller instead. Same cause, same page, two different levers.
-
----
-
-## What is in `tdstyle.tex`
-
-| | |
-|---|---|
-| `\oliveTypeAlign` / `\oliveLogoPos` / `\oliveTypeEdge` | the three cover settings — see **The cover has three settings** above |
-| `\oliveTheme` | the palette. Type `oliveGreen` (accent), `oliveInk` (text), `olivePaper` (ground), `oliveRust` (alert), `oliveTeal` (example) |
-| `\ac{...}` | a term, in accent colour |
-| `\acb{...}` | a named thing — a standard, a tool, a study — accent and bold |
-| `\code{...}` | a literal. Follows the ambient size, always upright |
-| `\aside{...}` | the note at the foot of a frame, above a hairline rule |
-| `\slidelead{...}` | a frame's opening line, under the title band |
-| `stepflow` / `\stepcard` / `\steparrow` | the card row. `\stepcard[w]` takes a width multiplier; the multipliers in a row should sum to the card count |
-| `\tdsection{title}{subtitle}` | a section divider. **Takes both at once** — `\AtBeginSection` typesets the divider the moment `\section` runs, so a subtitle set on the following line arrives too late and is dropped |
-| `\tdstudy{label}{title}{body}` | a divider *inside* a section. Quieter than a section page: thin spine, no page-wide fill |
-| `\swot{S}{W}{O}{T}` | the 3×3 grid. Quadrant colours are *mixed* from the two axes rather than picked, so both axes are legible in the colour itself. Requires `\usepackage{tcolorbox}` and `\tcbuselibrary{skins, raster}` in the preamble. Keep each quadrant to about four lines |
 
 `figures/trim.py` crops a transparent border off a generated PNG, keeping 8px.
-A bare `getbbox()` crop makes the figure effectively wider and taller inside the
-space it occupies, which is enough to disturb a height tuned by eye.
+A bare `getbbox()` crop makes the figure effectively larger inside the space it
+occupies, which is enough to disturb a height tuned by eye.
 
----
+## Licence
 
-## Conventions the deck was written to
-
-Not enforced by the machinery, but the pages assume them.
-
-**Dividers.** Title states the section's claim or scope; subtitle names the
-evidence. A subtitle that restates the title, or that announces the finding the
-pages have to earn, leaves those pages with nothing to deliver. Three of the
-five were rewritten for exactly this.
-
-**Citations.** `\acb{Name et al., YYYY}` in prose, every time it appears — a rule
-keyed to "first mention in a frame" has to be re-checked on every edit and rots
-silently when a page moves. `\textbf{}` inside tables (that is the first-column
-label style) and for paragraph leads that are not names.
-
-**Cards and prose.** The cards carry the mechanics; the prose carries the
-argument. Restating a card in the paragraph under it is the commonest way these
-pages run over — it happened on four of them.
-
-**Figures.** Draw only what the data says. An edge added to carry a caption is a
-claim; a caption naming a value that is not in the picture points at nothing.
-Both mistakes were made and caught: an invented `rotate → basic_sc` edge, and
-two captions turning on `safe` and `nosec`, neither of which was drawn.
-
-**Overflow.** When a page runs over, find what actually sets its height — the
-tallest card in a row, the taller of two columns, a wrapped row *label*.
-Shrinking anything else is wasted effort. Cut a sentence before you cut the gaps
-between paragraphs: the gaps are what mark where one point ends.
+See [LICENSE](LICENSE) — three sets of terms, because the theme, the additions
+and the fonts came from three different places. The theme and the additions are
+CC BY 4.0; the fonts are under the SIL Open Font Licence, which is not CC BY
+and does not merge into it — keep `OFL.txt` with the font files, including
+inside any zip you redistribute.

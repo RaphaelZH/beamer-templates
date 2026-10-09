@@ -43,10 +43,16 @@ what made those labels work. It was not. Removing both `SmallCapsFont` options
 and deleting the two SC files changed **not one pixel** of any of the five
 screenshots, which is how the claim was retired.
 
-The real gap, read out of the `GSUB` tables rather than guessed: **Cormorant's
-italics carry no `smcp`, and Red Hat Text carries none in any face.** `\textsc`
-in body text, or inside italic display text, will set ordinary letters and say
-nothing about it.
+The real gap is narrower than this file first claimed. Read out of the `GSUB`
+tables: **Cormorant's italics carry no `smcp`, and Red Hat Text carries none in
+any face.** But a face without `smcp` does not simply refuse — rendered and
+compared, `\textsc` inside italic Cormorant still sets small capitals, because
+fontspec falls back to the upright face's. What is lost is the **slant**, not
+the small caps.
+
+The first version of that sentence said it set ordinary letters. That was
+inferred from the table and never looked at, which is the same mistake this
+directory documents twice elsewhere.
 
 **Cormorant is a display face** — its own README says so. It is drawn for large
 sizes and goes thin at body size, which is why it is not the body font here and

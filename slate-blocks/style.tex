@@ -84,9 +84,15 @@
 % What fixed it is the \setbeamerfont block below, which moves those elements
 % onto the display face. See README.md, "small caps that are not small caps".
 %
-% The real gap, measured: Cormorant's ITALICS carry no `smcp`, and Red Hat Text
-% carries none in any face. \textsc in body text, or inside italic display
-% text, will set ordinary letters and say nothing.
+% The real gap, and it is smaller than this note first claimed. Cormorant's
+% ITALICS carry no `smcp` and Red Hat Text carries none in any face, both read
+% out of the GSUB tables. But a missing `smcp` does not mean \textsc fails:
+% rendered and compared, \textsc inside italic Cormorant still SETS small
+% capitals — fontspec falls back to the upright face's — so what is actually
+% lost is the SLANT, not the small caps. The first version of this note said
+% it set ordinary letters, which was inferred from the table and never looked
+% at. Nothing in this template asks for small caps in italic, so the fallback
+% has never fired here; check it if you write \textsc inside \textit.
 \setmainfont{Cormorant-Medium.otf}[
   Path             = fonts/Cormorant/,
   BoldFont         = Cormorant-Bold.otf,
@@ -119,6 +125,91 @@
 \usetikzlibrary{positioning}
 \usepackage{makecell}   % multi-line table cells
 \usepackage[most]{tcolorbox}   % the SWOT grid at the foot of this file
+
+% -----------------------------------------------------------------------------
+% THE RULE UNDER A BLOCK LABEL
+%
+% Three strokes, not one: a soft wide wash, a hairline over it, and a fainter
+% line a hair below. Together they read as a drawn line rather than a printed
+% one, which suits a label sitting on a tinted card rather than on a rule.
+%
+% The marks at the right end are the point of it. Five small parallelograms,
+% each a step lighter than the last, standing where the line ends — a hatched
+% tail that stops the rule dead rather than letting it run out. They cost
+% nothing to draw and they give the block an end.
+%
+% Adapted from a mockup, and only this part of it. The mockup also came with
+% seven new block colours, which were not taken: measured, its Example and
+% Comment sat at dE 3.6 from each other — under the 2.3 threshold's neighbour,
+% barely a perceptible difference — where the colours already here are 11.9
+% apart at their closest. It was the same collision this template had already
+% been fixed for.
+% -----------------------------------------------------------------------------
+\newcommand{\slateblockrule}[1]{%
+  \par\nointerlineskip
+  % trim=..., and 4pt of it. The strokes have round caps and the hatch marks
+  % lean past the end, so the picture measures wider than the line it draws —
+  % 4.0pt wider, reported once per block as an Overfull \hbox. Drawing 4pt
+  % short of \textwidth costs nothing visible and the log goes quiet.
+  \begin{tikzpicture}[x=1pt, y=1pt, baseline=0pt]
+    \pgfmathsetmacro{\slrw}{\textwidth-4}
+    \draw[#1!15, opacity=0.55, line width=1.7pt, line cap=round] (0,0) -- (\slrw,0);
+    \draw[#1!78, line width=0.36pt, line cap=round]              (0,0) -- (\slrw,0);
+    \draw[#1!42, opacity=0.36, line width=0.22pt, line cap=round] (0,-0.34) -- (0.97*\slrw,-0.34);
+    \foreach \i/\shade in {0/76, 1/68, 2/61, 3/54, 4/48}{%
+      \pgfmathsetmacro{\slrx}{\slrw-27.8+5.4*\i}
+      \path[fill=#1!\shade, opacity=0.36, rounded corners=0.35pt]
+        (\slrx,-0.11) -- ++(4.25,8.2) -- ++(5.1,0) -- ++(-4.25,-8.2) -- cycle;
+      \draw[#1!80, opacity=0.38, line width=0.26pt, line cap=round]
+        (\slrx+0.57,-0.11) -- ++(3.97,8.2);
+    }
+    \draw[#1!48, opacity=0.35, line width=0.34pt, line cap=round]
+      (\slrw-2.3,-0.34) -- (\slrw,-0.34);
+  \end{tikzpicture}%
+  \par\nointerlineskip
+}
+
+% -----------------------------------------------------------------------------
+% HOW A BLOCK IS DRAWN
+%
+% A label, a rule under it, and a tinted body. No bar, no shadow, no frame.
+% Why the bar went is in the note above \blockcolours; this is the geometry.
+%
+% EVERY SKIP HERE IS EXACT, AND THAT TOOK TWO GOES.
+%
+% \vskip after \insertblocktitle does nothing useful: the title has not ended
+% its paragraph, so the skip forces one, and what lands is a \baselineskip
+% rather than the number written. The gap under the label measured 30px at
+% 150dpi where 1pt had been asked for. \par then \nointerlineskip then \vskip
+% is exact, and \hrule in vertical mode is exact where \rule is not.
+%
+% tcolorbox brings its own `before skip`, so 4pt above the body rendered as
+% 15px. Zeroed here, after which the number written is the number drawn: 1pt
+% gives 2px, 4pt gives 8px, 2.5pt gives the 5px this uses.
+%
+% That accident was also costing a page. The seven-block demo overflowed by
+% 87.8pt, and tightening the spacing by hand only ever got it to 46.8pt —
+% because the waste was seven stray \baselineskips, not the spacing. Fix the
+% skips and the page fits with room over.
+%
+% coltext=fg IS NOT OPTIONAL. tcolorbox does not inherit beamer's text colour:
+% give it colback alone and the body sets in pure black. Sampled from the
+% render it came out #000000 where the rest of the deck is #5D677D, and it
+% reads as though the block had been deliberately darkened.
+% -----------------------------------------------------------------------------
+\setbeamertemplate{block begin}{%
+  \par\vskip0pt%
+  {\usebeamerfont{block title}\usebeamercolor[fg]{block title}\insertblocktitle\par}%
+  \nointerlineskip\vskip2pt%
+  {\usebeamercolor[fg]{block title}\slateblockrule{fg}}%
+  \nointerlineskip\vskip2.5pt%
+  \usebeamercolor{block body}%
+  \begin{tcolorbox}[colback = bg, colframe = bg, coltext = fg,
+                    boxrule = 0pt, arc = 3pt, boxsep = 0pt,
+                    left = 6pt, right = 6pt, top = 3pt, bottom = 4pt,
+                    before skip = 0pt, after skip = 0pt]%
+}
+\setbeamertemplate{block end}{\end{tcolorbox}\vskip3pt}
 
 % -----------------------------------------------------------------------------
 % THE PALETTE
@@ -181,15 +272,40 @@
 % The original wrote those eight lines out once per block, seven times over.
 % The colours are the design; the repetition was not.
 % -----------------------------------------------------------------------------
+% THE LABEL IS COLOURED, NOT THE BAR BEHIND IT.
+%
+% Each block used to open with a full-width bar filled at the block's colour
+% with the label reversed out in white. That bar was the whole reason unblocked
+% text on the same page looked like background: measured on the demo's mixed
+% page, a block covered 25.0% of its area in ink against the prose's 8.0% —
+% three times the weight, for two paragraphs of equal importance.
+%
+% The bar was also the only thing that mattered. Taking the body tint away
+% instead moved 25.0% to 24.6%; taking the bar away moved it to 7.4%, level
+% with the prose. The tint spreads over far more of the page but is too pale to
+% register; the bar is small and fully saturated. The shadow, which was the
+% first suspect, moved it to 24.9% — nothing.
+%
+% !300, not the colour itself. These seven are drawn near white, so at full
+% strength on their own !25 tint they run 1.48:1 to 1.59:1 — invisible. !250
+% leaves three of the seven under 4.5:1 (Proposal 4.18, Problem 4.15, Challenge
+% 4.01). !300 puts all seven between 5.98:1 and 8.79:1.
+%
+% Darkening also makes them easier to tell apart, which is the opposite of what
+% you would expect. As pale bars the closest pair — Proposal and Challenge —
+% sat at dE 3.3, barely a perceptible difference, so seven "distinguishable"
+% block colours were really two or three. At !300 that pair is dE 11.9 and the
+% median gap across all pairs goes from 8.1 to 28.6. The seven only became
+% seven when the bars came off.
 \newcommand{\blockcolours}[1]{%
-  \setbeamercolor{block title}{use=example text, fg=white, bg=#1}%
+  \setbeamercolor{block title}{use=example text, fg=#1!300, bg=}%
   \setbeamercolor{block body} {parent=normal text, use=block title example,
                                bg=#1!25}%
 }
 \newcommand{\blockcoloursreset}{%
-  \setbeamercolor{block title}{use=structure, fg=white, bg=structure.fg!75!white}%
+  \setbeamercolor{block title}{use=structure, fg=structure.fg!250, bg=}%
   \setbeamercolor{block body} {parent=normal text, use=block title,
-                               bg=block title.bg!10!bg}%
+                               bg=structure.fg!10!bg}%
 }
 
 \newcommand{\newcolouredblock}[3]{%
@@ -393,6 +509,171 @@
                        colback=#1, valign=center, halign=center},
   swotfirstcol/.style={swotheader=#1, width=1cm},
 }
+% =============================================================================
+% THE CARD SYSTEM
+%
+% Brought back from the v5 literature-review deck, where both of these were
+% built and settled before the template had either. What arrived is the shape
+% they ended at, not the shape they started in — the notes below carry the
+% wrong turns, because those are the part worth keeping.
+% =============================================================================
+
+% -----------------------------------------------------------------------------
+% \slatedivider{label}{headline}{body} — the section-divider card.
+%
+% Built as one of the deck's own blocks rather than as a new object: the same
+% coloured title bar, the same small caps in the display face, so a divider is
+% recognisably a member of the family and not a slide from another deck. What
+% it adds is a drop shadow, which no other block has -- that is what lifts it
+% off the page and says "this is a break", and it is the only place the deck
+% uses one.
+%
+% Three levels inside, each a different job, which is why they are set three
+% different ways rather than in three sizes of the same thing:
+%
+%   label      where you are. Small caps in the display face, in the bar.
+%   headline   what this section asks. Display face, one line, dark.
+%   body       the requirement itself, verbatim. Text face, grey, so the
+%              headline stays the first thing read.
+%
+% Hyphenation is off in the body. The measure is wide and the paragraph short,
+% so a break like "appli-cations" buys nothing and costs the one thing a
+% divider page is for, which is being read at a glance. \language=255 rather
+% than \hyphenpenalty alone -- see the title page for why the penalty by itself
+% does not hold once the font changes inside the argument.
+% -----------------------------------------------------------------------------
+% \slatedivider{EYEBROW}{Headline}{body} — a whole divider PAGE.
+%
+% It emits the frame as well as the card: [plain], the card centred between
+% two \vspace{\fill}. A deck writes one command where it used to write five
+% lines, and the vertical centring stops being something each divider has to
+% remember.
+%
+% THAT IS ALSO THE ONLY REASON IT STILL EXISTS. For a while it was
+% \begin{slatecard}...\end{slatecard} and nothing else — one construct wearing
+% two names, which is how these two drifted apart in the first place: they were
+% two copies of forty lines, with a comment claiming they were shared, and
+% flattening one left the other with a filled band and a drop shadow.
+%
+% Now the two differ in what they ARE. slatecard is a card you put on a page.
+% \slatedivider is a page. Anything that needs the card inside a frame of its
+% own making — a listing, which cannot be a macro argument at all, or a card
+% sharing a page with something else — uses the environment.
+\newcommand{\slatedivider}[3]{%
+  \begin{frame}[plain]
+    \vspace{\fill}
+    \begin{slatecard}[slatedividerstyle]{#1}{#2}#3\end{slatecard}
+    \vspace{\fill}
+  \end{frame}}
+
+% -----------------------------------------------------------------------------
+% slatecard — the divider's card as an environment, for content that cannot be
+% passed as a macro argument. A verbatim listing is exactly that: lstlisting
+% reads its body with catcodes changed, which a \newcommand argument has
+% already tokenised by the time the box sees it.
+%
+% Same shell as \slatedivider, one shared definition, so the two cannot drift
+% apart. What differs is only what goes inside.
+% -----------------------------------------------------------------------------
+% THE BAND AND THE SHADOW ARE GONE; A RULE DOWN THE LEFT EDGE MARKS THE CARD.
+%
+% The card used to open with a filled ThemeColor band carrying its title, and
+% to sit on a drop shadow. Both were doing the same job the seven *Box blocks
+% used to do with their bars, and they were measured out for the same reason:
+% a filled bar is small but fully saturated, so it dominates a page far beyond
+% its area, and the shadow adds ink without adding meaning.
+%
+% What replaces them is one 3pt rule down the left edge in the darkened theme
+% colour, and the title set as a letterspaced eyebrow inside the card rather
+% than reversed out of a band above it. The card is still plainly a card: it
+% has a fill, a radius and an edge. It just no longer shouts.
+%
+% sharp corners=west, not all four. The rule reads as an edge only if it is
+% straight; rounded off at both ends it becomes a decorative stroke floating
+% beside the panel. The right side keeps its radius, which is what the
+% reference does and it is right — the marked edge is square, the free edge
+% is soft.
+\tcbset{slatecardstyle/.style={
+    enhanced,
+    colback=ThemeColor!10, colframe=ThemeColor!10,
+    colbacktitle=ThemeColor!10, coltitle=ThemeColor!300,
+    fonttitle=\slateDisplayFont\large,
+    % 4mm, not 0. At 0 the eyebrow sat flush against the card's top edge with
+    % no air at all, which reads as a clipping error rather than as a design.
+    toptitle=4mm, bottomtitle=1.5mm, lefttitle=9mm,
+    boxrule=0pt, arc=2.5mm, sharp corners=west,
+    borderline west={3pt}{0pt}{ThemeColor!300},
+    left=9mm, right=11mm, top=6mm, bottom=8mm,
+    width=\linewidth}}
+
+% A DIVIDER IS A FIXED SIZE. A content card may be any height — its content is
+% — but a divider is a recurring structural page, and two of them at different
+% heights read as a mistake rather than as a rhythm. Measured at 150dpi, the
+% divider in this deck came out 340px against 439–527 for the content cards,
+% and a second divider with a shorter body would have sat somewhere else again.
+%
+% `height from`, NOT `height`. Both were built and rendered with a body padded
+% until it overran:
+%
+%   height=58mm            the card stops at 58mm and the TEXT KEEPS GOING,
+%                          straight out of the bottom edge and off the slide.
+%                          No warning of any kind — not a vbox, not a badness.
+%   height from=58mm to    the card grows instead: 340px to 439px at 150dpi.
+%                          Still no warning, and correctly so — it grew and it
+%                          still fits. Grow it past the frame and check.sh
+%                          reports the overflow, which is the whole point.
+%
+% A hard height is the one thing this template exists to refuse: content
+% silently discarded to make a number come out right. Uneven dividers would
+% have been the lesser fault.
+%
+% There is no `minimum height` key in tcolorbox. Asking for one is a pgfkeys
+% error that stops the build, which at least fails loudly.
+%
+% 80mm IS FOUR FIFTHS, AND THE PAGE MAKES THAT EASY: 283.46pt is 100.0mm, so
+% the millimetre figure IS the fraction. Do not reach for \paperheight here —
+% a macro in this key breaks tcolorbox's parsing of the `to` separator, and the
+% error it throws (File ended while scanning use of \pgfkeys@code) points
+% nowhere near the cause.
+%
+% Four fifths rather than five sixths or nine tenths because it is the only one
+% that agrees with the page's own margins. Measured off the render, the card's
+% left margin is 10.0mm; at 80mm the top and bottom come to 9.0 and 10.9mm, and
+% the card reads as a card laid on the page. At 90mm they are 4.5 and 5.5 — the
+% card is pressed against the edges and reads as a page with a rule down it.
+\tcbset{slatedividerstyle/.style={slatecardstyle, height from=80mm to \textheight}}
+
+% Optional first argument for per-page tcolorbox overrides -- padding, mostly.
+% A page carrying a long listing and a footnote needs tighter margins than one
+% carrying a paragraph, and the alternative is shrinking the type, which is
+% what check.sh exists to prevent.
+% \begin{slatecard}[tcb options]{EYEBROW}{Headline}
+%
+% Two lines of heading, not one. The eyebrow names the KIND of thing the card
+% holds — a source, a requirement, a step — and is set small, letterspaced, in
+% the sans. The headline is the sentence itself, set large in the display face.
+%
+% The headline may be empty. \ifblank swallows the whole thing, spacing
+% included, so a card that only wants an eyebrow costs nothing and reads
+% exactly as it did before this argument existed.
+%
+% before upper, not a second title. tcolorbox's title is one box with one set
+% of paddings; stacking two registers inside it means fighting toptitle and
+% bottomtitle for each. Putting the headline at the top of the body instead
+% lets the eyebrow keep the title's spacing and the headline take the body's.
+\newtcolorbox{slatecard}[3][]{slatecardstyle, #1,
+  before lower={},
+  fontupper={\language=255\hyphenpenalty=10000\exhyphenpenalty=10000},
+  % \MakeUppercase, NOT \textsc. Red Hat Text carries no `smcp` — checked in
+  % its GSUB table, all six faces — so \textsc here sets ordinary mixed case
+  % with the letterspacing applied and nothing else, which looks like a near
+  % miss rather than a mistake. Uppercase substitutes real capitals and needs
+  % no feature from the font at all.
+  title={\addfontfeature{LetterSpace=6}\textsc{#2}},
+  before upper={\ifblank{#3}{}{%
+    {\slateDisplayFont\LARGE\color{ThemeColor!300}\raggedright #3\par}%
+    \vskip2.5mm}\raggedright}}
+
 % -----------------------------------------------------------------------------
 % SWOT
 %

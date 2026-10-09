@@ -1,276 +1,214 @@
 # slate-blocks
 
-A 16:10 beamer deck built on stock themes — Madrid, miniframes, circles — with
-three things added: a palette derived from one colour, seven named blocks in
-place of beamer's three, and a photographic title page.
+A 16:10 beamer theme in one desaturated blue-grey, with seven named blocks in
+place of beamer's three, a card for section dividers, and a photographic title
+page. Built on the stock Madrid / miniframes / circles themes.
 
-The name is the palette, not the season. `#bec2cb` is a desaturated blue-grey;
-the autumn cover is a photograph you are expected to swap out, and swapping it
-changes nothing about the colours.
+![The title page](screenshots/title.png)
+
+**XeLaTeX only.** The fonts are OpenType and loaded by path, which means
+`fontspec`.
+
+## Quick start
+
+Copy this directory, then:
 
 ```
-./check.sh          build slides.tex, report overflows
-./check.sh demo     build demo.tex — every construct, filled
+./check.sh          build slides.tex, report any frame that overflows
+./check.sh demo     build demo.tex — every construct, filled out
+./check.sh --clean  remove build artefacts
 ```
 
-**XeLaTeX.** Two bundled faces with a division of labour, the same arrangement
-`midcentury-olive/` uses:
+Write your deck in `slides.tex`. `style.tex` holds the theme and is loaded with
+`\input{style}` after `\documentclass` and the `\usetheme` lines.
+
+Run the build **twice** — anything placed with `remember picture, overlay`
+needs the previous pass's `.aux`, and that is the whole title page. `check.sh`
+does this for you. On a fresh clone run it twice over: two passes hold a
+settled layout but do not reach one, and the first build puts the cover's type
+and photograph in the wrong place with nothing in the log to say so.
+
+## What it gives you
 
 | | |
 |---|---|
-| **Red Hat Text** | everything you read a paragraph of — body, bullets, block bodies, tables, the footline |
-| **Cormorant** | everything you read one line of — the title page, frame titles, block labels, the section strip |
+| seven named blocks | `ExampleBox`, `CommentBox`, `ProposalBox`, `ReminderBox`, `ProblemBox`, `ChallengeBox`, `DefinitionBox` |
+| `\slatedivider{EYEBROW}{Headline}{body}` | a section-divider page |
+| `slatecard` environment | the same card inside a frame you open yourself — use it for a `lstlisting`, which cannot be a macro argument |
+| `\swot{S}{W}{O}{T}` | a 3×3 SWOT grid |
+| `\slatetitlepage` | the cover |
+| `\slateWatermark{file}` | the cover photograph on every slide at 6.7% |
+| `\slatecover{file}` | scales an image to cover the slide at any aspect ratio without distorting it |
 
-Both are under the SIL Open Font License, both are in `fonts/`, both are loaded
-by filename from `Path`. Nothing to install and nothing that can be silently
-substituted.
+![The seven blocks](screenshots/blocks.png)
 
-The split is not decoration. Cormorant is a display face — its own README says
-so — and it is lovely at 21pt and thin at 9pt. Body text and the footline are
-the two places a deck can least afford thin, so they go to Red Hat Text, which
-was drawn for exactly that size. Cormorant Medium rather than Regular even in
-its display role: against a Red Hat body, Regular reads as the quieter of the
-two and the hierarchy inverts.
-
-This template did build under pdfLaTeX until the fonts arrived. OpenType means
-`fontspec` and `fontspec` means XeLaTeX, and that is the price. `check.sh`
-already defaults to `xelatex`, so nothing about the workflow changes;
-`ENGINE=pdflatex` now fails on the first `\setsansfont`.
-
-## Before you build: the cover, and the logo
-
-`figures/background.png` is the author's own photograph, edited into a
-watercolour. It is used twice — full-bleed on the title page, and again at
-6.7% as the watermark under every other slide. One line sets both:
+Each block is a label in its own colour over a hatched rule, on a pale tint of
+the same colour. Use them as environments:
 
 ```latex
-\slateWatermark{figures/background.png}   % preamble, in slides.tex
-\renewcommand{\slateBackground}{figures/background.png}   % if you want them different
+\begin{ProposalBox}{A heading}
+  ...
+\end{ProposalBox}
 ```
 
-Replace it and expect to re-measure the title page. Nothing on it is boxed —
-the type sits on the photograph — so where each line lands was chosen from
-where *this* picture is flat and pale, and a new one moves all of it. The
-offsets and the two `!300` tints in `\slatetitlepage` carry the numbers they
-were set from. Check the watermark too: 6.7% was set against an image of this
-lightness, and a darker photograph at the same opacity will fight the body
-text.
+To rename them — into another language, or to other categories — edit the
+second argument in `style.tex`; nothing else depends on it:
 
-`figures/logo.png` is a placeholder. No institution's mark ships here — a logo
-is its owner's trademark and the licence on these files does not extend to it.
-Replace it locally and keep it out of the history.
+```latex
+\newcolouredblock{ExampleBox}{Example}{ThemeColor}
+```
 
-## The palette is one colour
+![The SWOT grid](screenshots/swot.png)
+
+The SWOT quadrant colours are mixed from the two axes rather than picked, so a
+reader can place a quadrant without reading its label. Keep each quadrant to
+about four lines.
+
+## The palette
 
 ```latex
 \definecolor{ThemeColor}{RGB}{190, 194, 203}   % #bec2cb
 ```
 
-Everything else is derived from it by colour-wheel relations — two analogous,
-three tetradic, two split-complementary — and all seven sit at the same
-lightness and saturation. The hue distinguishes them and nothing else does, so
-no block shouts louder than another.
+Everything else derives from it by colour-wheel relations — two analogous,
+three tetradic, two split-complementary — all at the same lightness and
+saturation, so hue is the only thing that distinguishes them and no block
+shouts louder than another.
 
-The same colour does both ends of the range: at full strength it is a
-background, and at `!250` — beamer's syntax for a tint past 100%, that is, a
-darkening — it is the body text. That is what keeps the deck quiet.
+One value covers both ends of the range: at full strength it is a background,
+at `!250` (beamer's syntax for a tint past 100%, i.e. a darkening) it is the
+body text.
 
-To re-tint the whole deck, change the one `\definecolor` and re-derive the
-other seven. They are not computed at build time; they are written out, because
-`xcolor`'s wheel arithmetic does not survive being read back.
+To re-tint the deck, change the `\definecolor` and re-derive the other seven by
+hand. They are written out rather than computed, because `xcolor`'s wheel
+arithmetic does not survive being read back.
 
-## Seven blocks
+## The cover
 
-Beamer gives you `block`, `exampleblock`, `alertblock`. This wanted seven, each
-naming what it holds:
-
-```latex
-\newcolouredblock{ExampleBox}   {Example}    {ThemeColor}
-\newcolouredblock{CommentBox}   {Comment}    {AnalogousColor-1}
-\newcolouredblock{ProposalBox}  {Proposal}   {AnalogousColor-2}
-\newcolouredblock{ReminderBox}  {Reminder}   {TetradicColor-1}
-\newcolouredblock{ProblemBox}   {Problem}    {TetradicColor-2}
-\newcolouredblock{ChallengeBox} {Challenge}  {TetradicColor-3}
-\newcolouredblock{DefinitionBox}{Definition} {SplitComplementaryColor-1}
-```
-
-The second argument is the printed label and nothing depends on it — rename
-them into your own language there.
-
-`\newcolouredblock` exists because beamer has no per-block colour.
-`\setbeamercolor` inside a frame leaks into everything after it, so the factory
-sets the colours before the environment and puts them back after, using
-etoolbox's `\BeforeBeginEnvironment` / `\AfterEndEnvironment`. The original deck
-wrote those eight lines out once per block, seven times over.
-
-## The SWOT grid
+`figures/background.png` is the author's own photograph. It is used full-bleed
+on the title page and again at 6.7% as the watermark under every other slide.
 
 ```latex
-\swot{strengths}{weaknesses}{opportunities}{threats}
+\slateWatermark{figures/background.png}                   % in slides.tex
+\renewcommand{\slateBackground}{figures/background.png}   % if the two differ
 ```
 
-A 3×3 `tcbitemize`: a blank corner, two column headers, two rows each opening
-with a rotated label. The four quadrant colours are **mixed, not picked** —
-every quadrant is half helpful/harmful and half internal/external — so both
-axes are legible in the colour itself and a reader can place a quadrant without
-reading a label. The letter watermarked in each quadrant is the tcolorbox
-colour name, which labels it without spending a line on a heading.
+The five fields are `\renewcommand`s rather than arguments, so they can carry
+long strings with markup:
 
-Keep the contents short. Each quadrant gets a quarter of the slide and about
-four lines is what fits; `./check.sh` will tell you when it does not.
+```latex
+\renewcommand{\slateTitle}{...}
+\renewcommand{\slateSubTitle}{...}
+\renewcommand{\slateAuthor}{...}
+\renewcommand{\slateAffiliate}{...}
+\renewcommand{\slateDate}{...}
+```
 
-The same command is in `midcentury-olive/`, in that template's colours.
+**Replacing the photograph means re-measuring the cover.** Nothing on it is
+boxed — the type sits directly on the image — so every offset in
+`\slatetitlepage`, the two `!300` tints and the 6.7% watermark were chosen
+against *this* picture's flat, pale areas. A new photograph moves all of them.
 
-## These stop the build
+`figures/logo.png` is a placeholder. No institution's mark ships here: a logo
+is its owner's trademark and the licence on these files does not extend to it.
 
-**`\newtheorem` on a name that already exists.** `\Example`, `\Definition` and
-several others are taken — amsmath and beamer's own theorem set define them —
-and `\newtheorem` fails outright. That is why every block name here carries a
-`Box` suffix. It is uglier than the bare word and cheaper than finding out
-which words are free in every package a future deck might load.
+## Fonts
 
-**A `\newcommand` with an argument inside a frame.** Beamer reads a frame body
-twice, and the second read finds the definition already made:
-`Illegal parameter number in definition of \beamer@doifinframe`. Define it in
-the preamble.
-
-## These render wrong and say nothing
-
-**One pass.** Anything positioned with `remember picture, overlay` — which is
-the whole title page, and the watermark — needs the previous pass's `.aux`. A
-single `xelatex` leaves the cover blank and reports nothing. `check.sh` always
-builds twice; if you build by hand, do the same.
-
-**Two passes, on a clean tree.** Twice is enough to hold a settled layout, and
-not enough to reach one. On a fresh clone, or on the first build after moving
-anything on the title page, `check.sh` produces a title page with the
-photograph out of position and the type missing — silently, with no warning in
-the log. The third pass settles it, and every `check.sh` after that agrees to
-the pixel. **Run `./check.sh demo` twice after you clone, and twice after any
-change to `\slatetitlepage`.** This is why the committed screenshots look right
-despite the trap: they were taken from an already-settled `.aux`.
-
-**Small caps that are not small caps.** Every block label goes through
-`\textsc` in `\newcolouredblock`, and the frame titles are small caps too.
-Both came out as ordinary letters when the fonts were first swapped in — no
-error, no warning, just a page that looks subtly wrong until you compare it
-with the one before.
-
-The cause is not the font. Beamer resolves `frametitle` and `block title`
-through the **sans** family, so those headings were still being set in TeX Gyre
-Heros, which has no `smcp`, while the display face sat unused in the roman
-slot. The `\setbeamerfont` block in `style.tex` is what puts them on Cormorant,
-and that is what fixed it.
-
-This was diagnosed wrongly the first time and the wrong fix was committed:
-`SmallCapsFont = CormorantSC-...` was added to the `\setmainfont` call with a
-comment calling it load-bearing. It was not. Removing both options and deleting
-the two `CormorantSC` files changed **not one pixel** of any of the five
-screenshots — Cormorant carries `smcp` in its upright faces and `\textsc` finds
-it unaided.
-
-What is real, and measured from the `GSUB` tables: **Cormorant's italics carry
-no `smcp`, and Red Hat Text carries none in any face.** So `\textsc` in body
-text, or inside italic display text, will silently set ordinary letters. Check
-this on any face you swap in — and check which family the element you care
-about actually resolves to, which is the part that bit here.
-
-**A SWOT axis label that loses its second line.** The rotated labels in the
-first column are `\parbox`es, three lines each: the axis name and a `\tiny`
-parenthetical that wraps to two. Change the body font to a wider one and the
-axis name wraps as well, making four lines in a column that holds three — and
-the fourth does not overflow onto the page, it is simply **absent from the
-render**, with nothing in the log naming it. "External origin" is a few points
-longer than "Internal origin", so exactly one of the two labels loses its
-subtitle and the page still looks plausible.
-
-This has now happened twice: 2.4cm was enough for Computer Modern and broke
-under TeX Gyre Heros; 2.5cm broke under Red Hat Text. It is at 2.7cm.
-Measuring the string in a standalone document is not a reliable check — it
-under-reported by enough to look safe at 2.5cm when it was not. **Change the
-font, then look at the SWOT page.**
-
-**A cover photograph that does not cover the page.** The deck is 16:10 and most
-photographs are 16:9. `\includegraphics[width=\paperwidth]` scales the picture
-to the paper's width and leaves it about a tenth of the page short — a white
-band across the top that is easy to miss on a thumbnail. Giving both `width`
-and `height` distorts the picture; adding `keepaspectratio` letterboxes it,
-which is the same gap arrived at politely. `\slatecover` measures the image at
-full width and scales by height instead when that is not tall enough, and the
-node sits at `current page.center` so whichever dimension overruns is cropped
-evenly by the page edge. Both the cover and the watermark go through it.
-
-**A panel defending against a busyness that is not there.** There used to be a
-double-stroked, shaded box behind the title, on the reasoning that a photograph
-can be busy enough to swallow a plain panel. It can — but measure the ground
-under the box before believing it does. Under the current cover the sky there
-runs at sd 4.2 with no pixel darker than `(213,228,245)`, so the box was armour
-against nothing, and its hard border was the loudest edge on the page.
-
-There is no panel now. The type is set straight onto the photograph, placed
-around the band of crowns rather than over it: title, author and affiliation
-above it, the date on the field below it, the logo in the top-right corner.
-Every line was checked against the darkest single pixel beneath it, and the
-worst of them is 5.28:1.
-
-**Those offsets are measurements of one photograph.** They are not a layout that
-adapts. Replace `\slateBackground` and the first thing to do is find where the
-new picture's flat ground is; the second is to re-check the two `!300` tints,
-which exist because a specific patch of sky and a specific patch of field were
-a specific brightness.
-
-**The watermark at the wrong strength.** 6.7% reads as paper texture. At 15% it
-reads as an image, and the body text has to fight it. It is one number in
-`\slateWatermark`, and it is worth re-checking after you change the photograph.
-
-**Cover opacity.** The photograph is laid down at `opacity=0.55`. At full
-strength it comes up to the weight of the type over it; below about 0.5 it
-stops looking held back and starts looking faded.
-
-The usual recipe is two layers — the image at 0.65 with a white rectangle at
-0.15 over it. It is not worth the second layer here. The page behind is white,
-so the veil does nothing the opacity cannot, and the two render to within one
-part in 255 of a single `opacity=0.5525`. That was measured by differencing the
-two PNGs, not assumed. A white veil only earns its place over a ground that is
-not already white.
-
-## Noise in the log
-
-There is none. `./check.sh` and `./check.sh demo` both report nothing, under
-either document, which took a while to arrive at.
-
-This README used to describe a standing `Overfull \hbox` on the SWOT page as a
-phantom of the raster, on the evidence that narrowing the quadrant boxes at
-four different widths never moved it. The evidence was sound and the
-conclusion was wrong. It was never the quadrants: it was the parenthetical
-note in the rotated axis label, too wide for the `\parbox` it sits in. A
-number that does not move when you change one thing may still be measuring
-another.
-
-Widening the box does not fix it — the warning holds at 6.24pt at 2.7cm, 2.9cm
-and 3.0cm without moving, and by 2.9cm an `Overfull \vbox` appears instead,
-because the parbox is rotated and its width is the label's height. The only
-lever is making the text narrower, and there are two ways: fewer words or
-smaller words. `midcentury-olive/` took the first and says "(of the thing
-itself)". Here the note is set at 5pt instead of `\tiny`'s 6pt, which keeps
-the wording and, as it turns out, looks better — at 6pt it wrapped to two
-cramped lines, at 5pt it is one line running parallel to the axis name.
-
-If a warning does appear, the section that matters is the first one, *frames
-whose content is too tall*. That one is exact.
-
-## What is in `style.tex`
+Both are bundled in `fonts/`, under the SIL Open Font Licence, and loaded by
+filename from `Path` — never by family name, which fontconfig substitutes
+silently when it cannot resolve it. Which faces are bundled, and what to
+re-check if you swap one, is in [`fonts/README.md`](fonts/README.md).
 
 | | |
 |---|---|
-| the palette | one `\definecolor` and seven derivations, then the beamer colour assignments |
-| `\newcolouredblock` | the block factory, and the seven it builds |
-| `\slatecover{file}` | scales an image to cover the slide at any aspect ratio, without distorting it |
-| `\slateWatermark` | the cover photograph on every slide at 6.7% |
-| `\slatetitlepage` | full-bleed photograph, type set straight onto it — title block in the sky, date on the field, logo top-right |
-| `\swot` | the 3×3 grid, its axis labels and its mixed quadrant colours |
+| **Red Hat Text** | everything you read a paragraph of — body, bullets, block bodies, tables, the footline |
+| **Cormorant** | everything you read one line of — the cover, frame titles, block labels, the section strip |
 
-Load it after `\documentclass` and the `\usetheme` lines. The five title-page
-fields are `\renewcommand`s, not arguments, because a title page is the one
-place a deck wants long strings with markup in them and five arguments to one
-command is unreadable.
+The split is not decoration. Cormorant is a display face and goes thin at body
+size; body text and the footline are the two places a deck can least afford
+thin. Cormorant Medium rather than Regular even in its display role — against
+a Red Hat body, Regular reads as the quieter of the two and the hierarchy
+inverts.
+
+**If you swap a face, check `smcp` and check which family the element
+resolves to.** Beamer takes `frametitle` and `block title` through the **sans**
+family, so a display face sitting in the roman slot never reaches them; the
+`\setbeamerfont` block in `style.tex` is what redirects them. A face without
+`smcp` does not raise an error — `\textsc` simply returns something that looks
+nearly right. As bundled: Cormorant's upright faces carry `smcp`, accented
+letters included; its italics do not, and fall back to the upright small caps,
+losing the slant; Red Hat Text carries none in any face.
+
+## Language
+
+The language belongs to the deck, not to `style.tex`, and `babel` must come
+**after** `\input{style}` — the template is what loads fontspec and picks the
+faces.
+
+```latex
+\input{style}
+
+% The LAST option is the main language.
+\usepackage[english]{babel}
+%\usepackage[french,english]{babel}   % mainly English, some French
+%\usepackage[english,french]{babel}   % mainly French
+```
+
+`slides.tex` and `demo.tex` ship the first line active. The bilingual lines
+need `babel-french`, which Overleaf and a full TeX Live have and a minimal
+install does not — there they stop the build at `Unknown option 'french'`.
+`babel` and `polyglossia` cannot both be loaded.
+
+Every bundled face covers the Latin-1 accents, `œ`/`Œ`, `Ÿ` and the guillemets,
+and small caps reach the accented letters. A language package does not touch
+the fonts: `fontspec` chooses faces by path, `babel` chooses hyphenation and
+spacing.
+
+French inserts a thin space before `:` `;` `!` `?` inside `\texttt` and
+`lstlisting` as well, which is wrong in a URL, a path or a query string. Check
+any verbatim material containing a colon.
+
+## Troubleshooting
+
+**The cover is blank, or its type is out of place.** One pass. Build twice —
+three times on a fresh clone or after moving anything on the title page.
+
+**`\newtheorem` fails: command already defined.** `\Example`, `\Definition` and
+several others are taken by amsmath and by beamer's own theorem set. Every
+block name here carries a `Box` suffix for that reason.
+
+**`Illegal parameter number in definition of \beamer@doifinframe`.** A
+`\newcommand` that takes an argument, defined inside a frame. Beamer reads a
+frame body twice. Define it in the preamble.
+
+**Small caps come out as ordinary letters.** The element is resolving to a
+family without `smcp` — see *Fonts* above.
+
+**A SWOT axis label is missing its second line.** The rotated labels are
+`\parbox`es sized to three lines. A wider body font makes the axis name wrap
+too, and the fourth line is not overflowed onto the page, it is simply absent
+from the render with nothing in the log. The box is at 2.7cm; measuring the
+string in a standalone document under-reports. After changing a font, look at
+the SWOT page.
+
+**A frame overflows.** `./check.sh` names it. Cut it or split it — do not reach
+for `[shrink]`, which scales the content down to fit and is the behaviour this
+template exists to refuse.
+
+## Files
+
+```
+style.tex     the theme
+slides.tex    your deck
+demo.tex      every construct, filled out
+check.sh      build twice, report overflows
+fonts/        Red Hat Text, Cormorant, and their licences
+figures/      the cover photograph and a placeholder logo
+```
+
+## Licence
+
+See [LICENSE](LICENSE). The template and the cover photograph are CC BY 4.0;
+the two fonts are under the SIL Open Font Licence, which is not CC BY and does
+not merge into it — keep `OFL.txt` with the font files, including inside any
+zip you redistribute.
