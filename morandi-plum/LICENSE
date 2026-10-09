@@ -1,0 +1,69 @@
+This directory contains work from three different places. They are listed
+separately because the terms are not the same.
+
+
+1. THE TEMPLATE
+---------------
+style.tex, slides.tex, README.md
+
+    Copyright the contributors to this repository.
+    Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+    https://creativecommons.org/licenses/by/4.0/
+
+    You may copy, adapt and redistribute this, including commercially,
+    provided you give appropriate credit, link to the licence, and indicate
+    whether you made changes.
+
+    There is no upstream theme to credit. The palette was carried over from a
+    2019 presentation by the same author; everything around it — the title
+    page, the frame titles, the footline, the blocks — was written here. The
+    2019 deck had been built on Overleaf's "Molecular Chemistry" example, and
+    none of that survives: the layout was rewritten rather than recoloured,
+    and no file from it is in this directory.
+
+
+2. THE COVER IMAGE
+------------------
+figures/cover-oilwash.png
+
+    A photograph taken by the author, put through a generative tool into the
+    oil-wash treatment you see. Same CC BY 4.0 terms as the rest.
+
+    It is here because a template with no cover image cannot be judged. It is
+    not required: \morandiCoverArt selects the cover treatment, and four of
+    its five presets are drawn rather than placed and use no image at all.
+    Point \morandiartPhoto at your own file, or switch presets, and nothing
+    else needs changing.
+
+
+3. THE TYPEFACES
+----------------
+fonts/OpenSans/        the text face — body, bullets, block bodies, tables
+fonts/IBMPlexSerif/    the display face — cover, dividers, frame titles
+
+    Open Sans, copyright 2020 The Open Sans Project Authors
+    (https://github.com/googlefonts/opensans).
+    IBM Plex Serif, copyright 2017 IBM Corp., with Reserved Font Name "Plex".
+
+    Both are licensed under the SIL Open Font License, Version 1.1. The full
+    text of each is in OFL.txt inside its own directory.
+
+    All files are redistributed unmodified. Four faces of each family are
+    here — upright, italic, bold, bold italic — which is what this template
+    loads; taking a subset is permitted and changes nothing about the terms.
+
+    IBM's Reserved Font Name matters only if you MODIFY the font: an altered
+    copy may not be distributed under the name "Plex". Shipping it as it is,
+    which is what happens here, is unrestricted.
+
+    The OFL is not CC BY and does not merge into it. It travels with the font
+    files: keep these notices and the OFL.txt files with them, and do not sell
+    the fonts on their own. Bundling them inside something you sell is
+    allowed; selling them by themselves is not. If you swap a face out, delete
+    its paragraph here along with its directory — the obligation goes with the
+    files.
+
+    NEITHER FACE CARRIES smcp. That is a fact about the files, not a licence
+    term, but it is the one thing to check before replacing either: nothing in
+    this template uses \textsc, and a face swapped in on the assumption that
+    it does will fail silently.
