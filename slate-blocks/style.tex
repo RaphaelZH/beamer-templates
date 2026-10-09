@@ -664,11 +664,19 @@
 \newtcolorbox{slatecard}[3][]{slatecardstyle, #1,
   before lower={},
   fontupper={\language=255\hyphenpenalty=10000\exhyphenpenalty=10000},
-  % \MakeUppercase, NOT \textsc. Red Hat Text carries no `smcp` — checked in
-  % its GSUB table, all six faces — so \textsc here sets ordinary mixed case
-  % with the letterspacing applied and nothing else, which looks like a near
-  % miss rather than a mistake. Uppercase substitutes real capitals and needs
-  % no feature from the font at all.
+  % \textsc, and it works — but only because `fonttitle` above is
+  % \slateDisplayFont. The eyebrow is set in Cormorant, which carries `smcp`
+  % in its upright faces; accented letters included, checked in the GSUB table
+  % and confirmed by rendering a French title.
+  %
+  % This comment used to say the opposite: that \textsc had to be
+  % \MakeUppercase because Red Hat Text has no `smcp`. Red Hat Text has none —
+  % that part is true, all four faces — but it is not the face this line
+  % reaches. The warning was written for an earlier version where the title
+  % resolved through the sans slot, and it outlived it. If you ever drop the
+  % \slateDisplayFont from `fonttitle`, the warning comes back: the small caps
+  % will quietly become mixed case with the letterspacing still applied, which
+  % reads as a near miss rather than a fault.
   title={\addfontfeature{LetterSpace=6}\textsc{#2}},
   before upper={\ifblank{#3}{}{%
     {\slateDisplayFont\LARGE\color{ThemeColor!300}\raggedright #3\par}%
