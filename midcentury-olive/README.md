@@ -21,11 +21,18 @@ Copy this directory, then:
 ./check.sh --clean  remove build artefacts
 ```
 
-Write your deck in `slides.tex`. The preamble loads the theme, then the
-additions:
+Write your deck in `slides.tex`. Its preamble loads the theme and then the
+additions, with four lines around the `\usepackage` that silence two font
+probes the theme makes and does not need here — keep them, and see *Messages
+that are not faults*.
 
 ```latex
+\usepackage{fontspec}
+\let\mcmSavedIfFontExists\IfFontExistsTF
+\renewcommand{\IfFontExistsTF}[3]{#3}
 \usepackage{beamerthememidcenturymodern}
+\let\IfFontExistsTF\mcmSavedIfFontExists
+
 \input{tdstyle}
 \oliveTheme
 ```
@@ -33,9 +40,6 @@ additions:
 Run the build **twice**. Section and study dividers are drawn with
 `remember picture, overlay`, whose coordinates come from the previous pass's
 `.aux`; one pass leaves them blank. `check.sh` does this for you.
-
-Also on the Overleaf gallery. The "Open in Overleaf" button in the
-[repository README](../README.md) opens the current release as a new project.
 
 ## What it gives you
 
@@ -77,9 +81,8 @@ quadrant to about four lines.
 | `oliveTeal` | example |
 
 The `mcm*` names you will see in the `.sty` — `mcmPrimary`, `mcmBg` and the
-rest — are upstream's, and the `olive*` names are aliases onto them rather
-than renames. Keeping them as aliases is what allows a new upstream release to
-be dropped in unchanged.
+rest — are upstream's. The `olive*` names are aliases onto them, not renames,
+for the reason given under *Attribution*.
 
 ## The cover
 
@@ -103,8 +106,6 @@ Three settings, all optional, in the preamble after `\oliveTheme`:
 \renewcommand{\oliveTypeEdge}{0.06\paperwidth}
 ```
 
-The date follows the title; there is no setting that separates them.
-
 **Keep `\oliveTypeEdge` between 0.06 and 0.12.** The type block gets `(1 - 2e)`
 of the page, so the edge and the title's length pull against each other: at
 `0.06` a left-aligned title sits 9.6mm from the paper edge, and past `0.12` a
@@ -115,8 +116,9 @@ title until it fits, down to 55% of its nominal size, and reports neither an
 error nor an overfull box — `check.sh` cannot see it either. If a cover looks
 small, suspect the edge before the font.
 
-Write the date plainly, `\date{\MakeUppercase{\today}}`; `\oliveTypeEdge`
-places it.
+The date follows the title — there is no setting that separates them — so
+write it plainly, `\date{\MakeUppercase{\today}}`, and let `\oliveTypeAlign`
+and `\oliveTypeEdge` place it.
 
 ## Fonts
 
@@ -183,9 +185,14 @@ changes are listed. Keep them in the source files, not only here: a `.sty` gets
 copied into a new project on its own, a README does not travel with it.
 
 `beamerthememidcenturymodern.sty` is upstream verbatim apart from six comment
-lines in its header, so a new upstream release can be dropped in. The one
-exception is the title page: `tdstyle.tex` overrides it with a modified copy of
-upstream's own, which means that block will not follow upstream and should be
+lines in its header, **so a new upstream release can be dropped in whole**.
+Everything this directory adds sits in `tdstyle.tex` to keep that true, which is
+also why the `olive*` colour names are aliases rather than renames, and why the
+font probes are neutralised from the deck's preamble rather than deleted from
+the `.sty`.
+
+The one exception is the title page: `tdstyle.tex` overrides it with a modified
+copy of upstream's own, so that block will not follow upstream and should be
 re-diffed when it changes.
 
 ## Troubleshooting
@@ -225,7 +232,15 @@ puts already-fitting frames over the edge.
 page's height — the tallest card in a row, the taller of two columns, a wrapped
 row label — and cut there. Do not reach for `[shrink]`.
 
-### Log warnings that are not faults
+### Messages that are not faults
+
+**A red `I can't find file \`Lato'`, with an Emergency stop from METAFONT.**
+The theme asks fontconfig for Lato and for TeX Gyre Heros before `tdstyle.tex`
+replaces both; on a machine without Lato the question falls through to kpathsea,
+which calls METAFONT for a `.tfm` that does not exist. The build finishes and
+the fonts are correct. The four lines in the *Quick start* preamble send both
+probes down their false branch; `tlmgr install lato` also silences it, on that
+machine only.
 
 `check.sh` counts and suppresses one constant: `Overfull \hbox (21.33955pt too
 wide)`, once per titled frame. The frame title is a full-bleed band, a
@@ -253,6 +268,13 @@ figures/                          a placeholder logo, and trim.py
 `figures/trim.py` crops a transparent border off a generated PNG, keeping 8px.
 A bare `getbbox()` crop makes the figure effectively larger inside the space it
 occupies, which is enough to disturb a height tuned by eye.
+
+## On the Overleaf gallery
+
+<https://www.overleaf.com/latex/templates/midcentury-olive/jqzvxjxsywbn>
+
+That entry is a snapshot taken when it was last submitted, not a mirror of this
+directory — updating it means resubmitting the same Overleaf project.
 
 ## Licence
 

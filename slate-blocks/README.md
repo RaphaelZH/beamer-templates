@@ -206,6 +206,13 @@ fonts/        Red Hat Text, Cormorant, and their licences
 figures/      the cover photograph and a placeholder logo
 ```
 
+## On the Overleaf gallery
+
+<https://www.overleaf.com/latex/templates/slate-blocks-a-beamer-theme-with-seven-named-blocks/trffqmdcfqfc>
+
+That entry is a snapshot taken when it was last submitted, not a mirror of this
+directory — updating it means resubmitting the same Overleaf project.
+
 ## Licence
 
 See [LICENSE](LICENSE). The template and the cover photograph are CC BY 4.0;

@@ -11,7 +11,18 @@
 % =============================================================================
 \documentclass[aspectratio=169]{beamer}
 
+% The theme asks fontconfig for Lato and for TeX Gyre Heros before tdstyle.tex
+% replaces both, three lines further down, so the answers are thrown away. The
+% question is not free: on a machine without Lato, kpathsea falls through to
+% METAFONT and prints a red "I can't find file `Lato'" with an Emergency stop.
+% It is noise -- the build finishes and the fonts are correct -- but it reads
+% like a failure. These three lines make both probes take their false branch;
+% the .sty is not touched and stays a verbatim upstream copy.
+\usepackage{fontspec}
+\let\mcmSavedIfFontExists\IfFontExistsTF
+\renewcommand{\IfFontExistsTF}[3]{#3}
 \usepackage{beamerthememidcenturymodern}
+\let\IfFontExistsTF\mcmSavedIfFontExists
 \usepackage{tcolorbox}
 \tcbuselibrary{skins, raster}
 \usepackage{booktabs}
